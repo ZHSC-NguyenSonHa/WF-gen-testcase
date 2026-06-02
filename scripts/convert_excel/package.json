@@ -1,0 +1,9 @@
+{
+  "name": "convert_excel",
+  "version": "1.0.0",
+  "description": "Convert Markdown Test Cases to formatted Excel (.xlsx)",
+  "main": "md_to_xlsx.js",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
