@@ -1,0 +1,39 @@
+[STEP 3 / 6 — DECOMPOSITION]
+
+Tiếp nối Bước 2 (đã có câu trả lời cho mọi điểm mờ).
+
+==========================
+NHIỆM VỤ
+==========================
+Phân rã hệ thống thành cấu trúc cây 3 cấp để dễ quản lý:
+
+LEVEL 1 — Module / Feature
+  LEVEL 2 — Sub-feature / Screen / Workflow
+    LEVEL 3 — Functional Unit (input field, button, API endpoint, business rule)
+
+==========================
+QUY TẮC PHÂN RÃ
+==========================
+- Mỗi Functional Unit phải ĐỘC LẬP TEST ĐƯỢC.
+- Đặt mã code ngắn gọn cho mỗi node (ví dụ: `M_LOGIN`, `M_LOGIN.SF_FORM`, `M_LOGIN.SF_FORM.FU_EMAIL`).
+- Liệt kê tất cả input fields, buttons, business rules, API endpoints, validation rules.
+- Note rõ dependencies giữa các unit nếu có.
+
+==========================
+OUTPUT FORMAT
+==========================
+```
+M_<MODULE_CODE>: <Module Name>
+├── SF_<SUB_CODE>: <Sub-feature Name>
+│   ├── FU_<UNIT_CODE>: <Functional Unit Name>
+│   │   - Description: <…>
+│   │   - Type: <Field / Button / Business Rule / API>
+│   │   - Validation: <…>
+│   │   - Dependencies: <…>
+│   └── …
+└── …
+```
+
+Output dạng tree + bảng tổng hợp phẳng để dễ map ở Bước 4.
+
+Sau khi tôi confirm cấu trúc, sang Bước 4: Traceability Matrix.

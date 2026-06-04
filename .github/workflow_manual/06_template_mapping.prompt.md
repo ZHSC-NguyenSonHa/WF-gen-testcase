@@ -1,18 +1,19 @@
 ---
 description: "[Manual Workflow - Bước 6/6] Chuẩn hóa toàn bộ test cases vào bảng Markdown chuẩn, xuất Artifact để import Excel/Jira/TestRail/Xray."
-mode: agent
-tools: ['codebase', 'editFiles', 'search']
+name: manual-step-6-template-mapping
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 6: Chuẩn Hóa Format (Template Mapping)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review Test Cases ở [Bước 5 — RBT & TC Generation](05_rbt_and_tc_generation.prompt.md). Đây là bước cuối.
 
 ## ⚠️ Nguyên tắc thực thi
 
 - Output bằng **Tiếng Việt**, dạng **Artifact** (file `.md`).
-- Có thể convert sang Excel bằng skill **`excel_converter`** (`scripts/convert_excel/md_to_xlsx.js`).
+- Có thể convert sang Excel bằng skill **`excel-converter`** (`scripts/convert_excel/md_to_xlsx.js`).
 
 ## Nhiệm vụ
 

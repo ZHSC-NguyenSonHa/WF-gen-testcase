@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 3/6] Thiết kế kiến trúc Page Object Model từ locators đã thu thập (chưa sinh test script)."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'usages']
+name: automation-step-3-pom
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Automation — Bước 3: Thiết Kế Kiến Trúc POM (POM Design)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa_automation_engineer`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa-automation-engineer`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review locators ở [Bước 2 — Analysis & UI Recon](02_analysis_and_ui_recon.prompt.md). Tiếp theo: [Bước 4 — Test Data Strategy](04_test_data_strategy.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

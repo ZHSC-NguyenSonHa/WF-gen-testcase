@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 6/6] Review & refactor code: xóa debug artifacts, kiểm tra quality/stability, sẵn sàng CI/CD."
-mode: agent
-tools: ['codebase', 'editFiles', 'runCommands', 'search', 'usages']
+name: automation-step-6-review
+agent: agent
+tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Automation — Bước 6: Kiểm Duyệt & Tối Ưu (Review & Refactoring)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa_automation_engineer`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa-automation-engineer`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** test đã chạy PASS ở [Bước 5 — Script Generation](05_script_generation.prompt.md). Đây là bước cuối của workflow.
 
 ## ⚠️ Nguyên tắc thực thi

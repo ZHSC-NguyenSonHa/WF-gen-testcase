@@ -1,16 +1,16 @@
 ---
 description: Convert manual test cases into automation scripts autonomously using the 6-step AI-RBT Framework via Copilot Agent Capabilities.
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
 # Workflow: Sinh Automation Scripts từ Manual Test Cases
 
 > **BẮT BUỘC (MANDATORY SKILLS):** Bạn PHẢI nạp và đọc kỹ nội dung các skills sau trước khi bắt đầu:
-> - **`qa_automation_engineer`** (`.github/skills/qa_automation_engineer/SKILL.md`) — Quy tắc automation chung + workflow routing
-> - **`ui_debug_agent`** (`.github/skills/ui_debug_agent/SKILL.md`) — Inspect DOM, thu thập locators
-> - **`smart_locator_agent`** (`.github/skills/smart_locator_agent/SKILL.md`) — Sinh locator ổn định
-> - **`test_data_generator`** (`.github/skills/test_data_generator/SKILL.md`) — Sinh test data unique, traceable
+> - **`qa-automation-engineer`** (`.github/skills/qa-automation-engineer/SKILL.md`) — Quy tắc automation chung + workflow routing
+> - **`ui-debug-agent`** (`.github/skills/ui-debug-agent/SKILL.md`) — Inspect DOM, thu thập locators
+> - **`smart-locator-agent`** (`.github/skills/smart-locator-agent/SKILL.md`) — Sinh locator ổn định
+> - **`test-data-generator`** (`.github/skills/test-data-generator/SKILL.md`) — Sinh test data unique, traceable
 
 Workflow này giúp agent đọc file manual test cases do user cung cấp, tự mở browser inspect UI, thu thập locators thực tế, sinh automation scripts hoàn chỉnh (POM + Test), chạy test và tự sửa lỗi cho đến khi PASS.
 
@@ -96,7 +96,7 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
 2. **Với mỗi page trong test cases**, thực hiện:
    - `browser_snapshot` → đọc accessibility tree
    - Xác định tất cả elements cần tương tác (inputs, buttons, links, dropdowns...)
-   - Thu thập locator tốt nhất cho mỗi element (theo priority trong skill `smart_locator_agent`)
+   - Thu thập locator tốt nhất cho mỗi element (theo priority trong skill `smart-locator-agent`)
    - Verify locator bằng cách thử tương tác (`browser_click`, `browser_type`)
 
 3. **Ghi nhận vào bảng Locator Collection:**
@@ -144,7 +144,7 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
 
 3. **Kiểm tra project structure hiện tại:**
    - Nếu project đã có pages/ → sinh file vào đúng thư mục
-   - Nếu project mới → tạo structure theo skill `framework_architect`
+   - Nếu project mới → tạo structure theo skill `framework-architect`
    - Không tạo duplicate — kiểm tra page đã tồn tại chưa trước khi tạo mới
 
 ### Bước 4: Chuẩn bị Dữ liệu (Test Data Strategy)
@@ -154,7 +154,7 @@ Nếu user chưa cung cấp đủ → hỏi trước khi bắt đầu.
    - Data nào **cố định** (URL, config values) → đọc từ env/config
    - Data nào cần **nhiều bộ** (data-driven) → tạo file external (JSON/YAML)
 
-2. **Sinh test data utilities** (dùng skill `test_data_generator`):
+2. **Sinh test data utilities** (dùng skill `test-data-generator`):
    ```
    Format: <prefix>_<testName>_<timestamp>
    Ví dụ:

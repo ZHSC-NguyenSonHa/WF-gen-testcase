@@ -1,12 +1,13 @@
 ---
 description: "[Manual Workflow - Bước 1/6] Khởi tạo ngữ cảnh & role-play Senior QA Engineer, tóm tắt scope kiểm thử từ tài liệu yêu cầu."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'fetch']
+name: manual-step-1-context
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 1: Khởi Tạo Ngữ Cảnh (Context & Role-play)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** (`.github/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** (`.github/skills/rbt-manual-testing/SKILL.md`) trước khi bắt đầu.
 > Đây là **Bước 1/6** của quy trình AI-RBT. Tiếp theo: [Bước 2 — Analysis & QnA](02_analysis_and_qna.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

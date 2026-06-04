@@ -1,14 +1,14 @@
 ---
 description: Sinh manual test cases chất lượng cao theo quy trình AI-RBT 6 bước (Risk-Based Testing) từ requirements.
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.github/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements_analyzer`** để hiểu cách phân tích giao diện nếu cần.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt-manual-testing`** (tại `.github/skills/rbt-manual-testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements-analyzer`** để hiểu cách phân tích giao diện nếu cần.
 
 # Workflow: Sinh Manual Test Cases theo AI-RBT Framework (FULL RBT Mode)
 
-Workflow này sử dụng **Mode FULL RBT** của skill `rbt_manual_testing` — quy trình **AI-RBT (AI-Driven Risk-Based Testing)** gồm 6 bước tuần tự để sinh manual test cases từ tài liệu yêu cầu.
+Workflow này sử dụng **Mode FULL RBT** của skill `rbt-manual-testing` — quy trình **AI-RBT (AI-Driven Risk-Based Testing)** gồm 6 bước tuần tự để sinh manual test cases từ tài liệu yêu cầu.
 
 > [!NOTE]
 > **Luồng này dành cho Copilot (prompt file / slash command).** Agent thực hiện theo hướng dẫn trong skill, KHÔNG cần đọc file prompt.txt.
@@ -24,7 +24,7 @@ Workflow này sử dụng **Mode FULL RBT** của skill `rbt_manual_testing` —
 
 ## Các bước thực hiện
 
-Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` → phần **Mode 2: FULL RBT**.
+Thực hiện theo hướng dẫn chi tiết trong skill `rbt-manual-testing` → phần **Mode 2: FULL RBT**.
 
 ### Bước 1: Khởi tạo ngữ cảnh (Context & Role-play)
 1. Yêu cầu user cung cấp: tên dự án, mô tả hệ thống, mục tiêu MVP, tài liệu yêu cầu
@@ -53,7 +53,7 @@ Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` �
 4. **Validation chuyên biệt từng trường (Field-Level Validation):**
    - Liệt kê tất cả input fields trên form/UI đang test
    - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng
-   - Tham chiếu **Bảng Field-Level Validation** trong skill `rbt_manual_testing`
+   - Tham chiếu **Bảng Field-Level Validation** trong skill `rbt-manual-testing`
    - **KHÔNG** gộp validation nhiều trường vào 1 TC
 5. Bao phủ đầy đủ: Happy Path, Negative, Boundary, Edge Cases
 6. Test Data phải cụ thể (không placeholder chung)

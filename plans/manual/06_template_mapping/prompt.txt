@@ -1,0 +1,36 @@
+[STEP 6 / 6 — TEMPLATE MAPPING (FINAL OUTPUT)]
+
+Tiếp nối Bước 5 (đã có list test cases với risk score).
+
+==========================
+NHIỆM VỤ
+==========================
+Map TOÀN BỘ test cases ở Bước 5 sang bảng chuẩn dạng Markdown để export Excel/Jira/Xray.
+
+==========================
+TEMPLATE BẢNG TEST CASES
+==========================
+| TC ID | Module | Sub-feature | Title | Precondition | Test Steps | Expected Result | Test Data | Priority | Risk Level | Type |
+|---|---|---|---|---|---|---|---|---|---|---|
+| TC_LOGIN_EMAIL_001 | Login | Email Field | Valid email login | User has account | 1. Mở trang Login<br>2. Nhập email "user@domain.com"<br>3. Nhập password đúng<br>4. Click Submit | 1. Login thành công<br>2. Redirect tới Dashboard | email: user@domain.com<br>password: Pass@123 | High | HIGH | Functional / Positive |
+| … | … | … | … | … | … | … | … | … | … | … |
+
+==========================
+QUY TẮC BẢNG (CRITICAL)
+==========================
+1. **TC ID**: format thống nhất `<MODULE>_<SUBFEATURE>_<TYPE>_<NUM>` (ví dụ `CRM_CUST_TC_001`)
+2. **Test Steps & Expected Result**: ĐÁNH SỐ trong cell, dùng `<br>` để xuống dòng
+3. **Priority**: High / Medium / Low (auto-derive từ Risk Level)
+4. **Type**: Functional, Negative, Boundary, Security, Performance, Compatibility…
+5. **Test Data**: Cụ thể, KHÔNG placeholder. Nếu unique → ghi rõ pattern (ví dụ `email: test_<timestamp>@auto.test`)
+6. **TUYỆT ĐỐI KHÔNG bỏ sót** test case nào đã sinh ở Bước 5
+7. Nếu bảng quá dài → chia Part 1, Part 2, hỏi user trước khi tiếp
+
+==========================
+OUTPUT
+==========================
+- Lưu thành Artifact `test_cases_<module>.md`
+- Tóm tắt cuối: Tổng TC, breakdown theo Type, breakdown theo Priority
+- Đề xuất next steps (review với BA, convert sang automation, import vào Xray…)
+
+DONE. Toàn bộ quy trình AI-RBT 6 bước hoàn tất.

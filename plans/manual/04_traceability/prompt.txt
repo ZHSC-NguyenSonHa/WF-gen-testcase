@@ -1,0 +1,26 @@
+[STEP 4 / 6 — TRACEABILITY MATRIX]
+
+Tiếp nối Bước 3.
+
+==========================
+NHIỆM VỤ
+==========================
+Tạo Requirements Traceability Matrix (RTM) ánh xạ:
+  Requirement / User Story → Functional Unit (từ Bước 3) → Test Coverage
+
+==========================
+OUTPUT FORMAT
+==========================
+| Req ID | Requirement / Acceptance Criteria | Functional Unit Code | Coverage Status | Note |
+|---|---|---|---|---|
+| REQ-001 | User must log in with email + password | M_LOGIN.SF_FORM.FU_EMAIL, .FU_PASSWORD, .FU_SUBMIT | ✅ Full | |
+| REQ-002 | … | … | ⚠️ Partial — chưa có FU cho lockout sau 5 lần fail | Cần thêm FU_LOCKOUT |
+
+==========================
+KIỂM TRA
+==========================
+1. Mỗi Requirement phải map được tới ít nhất 1 Functional Unit. Nếu KHÔNG MAP ĐƯỢC → flag "❌ Missing FU".
+2. Mỗi Functional Unit phải được cover bởi ít nhất 1 Requirement. Nếu KHÔNG → flag "⚠️ Orphan FU" (có thể là feature thừa hoặc requirement bị thiếu).
+3. List ra rõ các gap để stakeholder confirm.
+
+Sau khi tôi confirm RTM (đã đóng tất cả gap), sang Bước 5: RBT + Test Case Generation.

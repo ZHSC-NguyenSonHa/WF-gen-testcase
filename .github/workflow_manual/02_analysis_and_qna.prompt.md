@@ -1,12 +1,13 @@
 ---
 description: "[Manual Workflow - Bước 2/6] Phân tích yêu cầu: xác định flows, phát hiện điểm mờ (ambiguity) và đặt câu hỏi Q&A có đánh số."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'fetch']
+name: manual-step-2-analysis-qna
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 2: Phân Tích Yêu Cầu & Q&A (Analysis & QnA)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** (+ `requirements_analyzer`) trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** (+ `requirements-analyzer`) trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã hoàn thành [Bước 1 — Context & Role-play](01_context_and_roleplay.prompt.md). Tiếp theo: [Bước 3 — Decomposition](03_decomposition.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

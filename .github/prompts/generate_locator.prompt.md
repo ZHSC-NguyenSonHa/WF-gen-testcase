@@ -1,6 +1,6 @@
 ---
 description: Sinh locator ổn định cho UI element. Hỗ trợ Playwright, Selenium, Appium.
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
@@ -10,10 +10,10 @@ tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 > AI inspect DOM/UI hierarchy thực tế, sinh locator ổn định theo priority chuẩn, verify uniqueness, trả về kết quả.
 
 > **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.github/skills/smart_locator_agent/SKILL.md` — Quy trình sinh locator
-> - **Skill:** `.github/skills/ui_debug_agent/SKILL.md` — Quy trình inspect DOM
+> - **Skill:** `.github/skills/smart-locator-agent/SKILL.md` — Quy trình sinh locator
+> - **Skill:** `.github/skills/ui-debug-agent/SKILL.md` — Quy trình inspect DOM
 > - **Rule:** `.github/instructions/locator-strategy.instructions.md` — Bản đồ ưu tiên locator
-> - **Rule:** `.github/instructions/<framework>_rules.md` — Quy tắc riêng framework đang dùng
+> - **Rule:** `.github/instructions/playwright.instructions.md` / `selenium.instructions.md` / `appium.instructions.md` — Quy tắc riêng framework đang dùng
 
 ---
 

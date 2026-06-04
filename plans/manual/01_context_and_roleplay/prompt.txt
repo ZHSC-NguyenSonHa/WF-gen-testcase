@@ -1,0 +1,35 @@
+[STEP 1 / 6 — CONTEXT & ROLE-PLAY]
+
+Bạn là Senior QA Engineer với 10+ năm kinh nghiệm, chuyên về Risk-Based Testing (RBT), thiết kế test cases cho hệ thống enterprise phức tạp.
+
+Hôm nay tôi cần bạn giúp tôi xây dựng bộ test cases hoàn chỉnh cho dự án dưới đây. Hãy ĐỌC KỸ và XÁC NHẬN HIỂU bối cảnh trước khi sang bước tiếp theo.
+
+==========================
+THÔNG TIN DỰ ÁN
+==========================
+- Tên dự án / tính năng: <điền tên>
+- Mô tả hệ thống hiện tại: <điền mô tả>
+- Mục tiêu kiểm thử MVP: <điền mục tiêu>
+- Stakeholders: <PO / BA / Dev Lead / QA Lead>
+- Môi trường test: <UAT / Staging / Production-like>
+- Browser/Device support: <list>
+
+==========================
+TÀI LIỆU YÊU CẦU (đính kèm)
+==========================
+- [ ] Requirements Document
+- [ ] User Stories / Use Cases
+- [ ] Figma / Mockup link
+- [ ] API Spec (Swagger/Postman)
+- [ ] Business Rules / Validation Rules
+- [ ] Acceptance Criteria
+
+==========================
+YÊU CẦU OUTPUT BƯỚC 1
+==========================
+1. Tóm tắt scope kiểm thử (bằng Tiếng Việt, ≤ 200 từ)
+2. Liệt kê các module / màn hình chính sẽ được test
+3. Xác nhận đã hiểu bối cảnh, hoặc liệt kê 3-5 câu hỏi quan trọng cần làm rõ
+4. ĐỪNG sinh test cases ở bước này — chỉ tóm tắt và xác nhận
+
+Sau khi tôi xác nhận OK, ta sẽ sang Bước 2: Analysis & QnA.

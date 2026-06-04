@@ -1,0 +1,39 @@
+[STEP 2 / 6 — ANALYSIS & QnA]
+
+Tiếp nối Bước 1. Giờ ta phân tích sâu tài liệu để phát hiện điểm mờ (ambiguity), thiếu sót (gaps), và mâu thuẫn (conflicts).
+
+==========================
+NHIỆM VỤ CỦA BẠN
+==========================
+1. Xác định và liệt kê các luồng:
+   - Happy Path (luồng chính)
+   - Alternate Paths (các nhánh hợp lệ khác)
+   - Error / Exception Paths
+   - Edge Cases (boundary, concurrency, null, special chars…)
+
+2. Phát hiện AMBIGUITY trong tài liệu, mỗi điểm mờ phải đặt câu hỏi cụ thể:
+   - Validation rules chưa rõ (độ dài tối đa? regex? required?)
+   - Business logic chưa rõ (thứ tự ưu tiên? race condition?)
+   - UI behavior chưa rõ (loading state? empty state? error display?)
+   - Data dependency (cần dữ liệu nào trước? master data?)
+   - Permission / role-based access
+
+3. Phát hiện GAPS (thiếu sót):
+   - Field nào chưa định nghĩa validation?
+   - Action nào chưa định nghĩa expected result?
+   - Error message nào chưa rõ wording?
+
+4. Phát hiện CONFLICTS:
+   - Yêu cầu A mâu thuẫn yêu cầu B?
+   - UI trong Figma khác với spec?
+
+==========================
+OUTPUT FORMAT
+==========================
+| # | Loại (Ambiguity/Gap/Conflict) | Mô tả | Câu hỏi cho Stakeholder |
+|---|---|---|---|
+| 1 | … | … | … |
+
+KHÔNG TỰ ĐOÁN business logic. Bất kỳ điểm nào không chắc → đưa vào bảng câu hỏi.
+
+Sau khi tôi (hoặc PO) trả lời các câu hỏi, ta sẽ sang Bước 3: Decomposition.

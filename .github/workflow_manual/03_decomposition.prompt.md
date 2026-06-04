@@ -1,12 +1,13 @@
 ---
 description: "[Manual Workflow - Bước 3/6] Phân rã hệ thống thành Module/Sub-module, mô tả chức năng và sơ đồ phụ thuộc."
-mode: agent
-tools: ['codebase', 'editFiles', 'search']
+name: manual-step-3-decomposition
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 3: Phân Rã Hệ Thống (Decomposition)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã trả lời hết Q&A ở [Bước 2 — Analysis & QnA](02_analysis_and_qna.prompt.md). Tiếp theo: [Bước 4 — Traceability](04_traceability.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

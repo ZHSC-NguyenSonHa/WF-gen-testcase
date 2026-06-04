@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 1/6] Khởi tạo ngữ cảnh & role-play Senior Automation Engineer, xác nhận tech stack trước khi tự động hóa."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'usages']
+name: automation-step-1-context
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Automation — Bước 1: Khởi Tạo Ngữ Cảnh (Context & Role-play)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp và đọc kỹ skill **`qa_automation_engineer`** (`.github/skills/qa_automation_engineer/SKILL.md`) trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp và đọc kỹ skill **`qa-automation-engineer`** (`.github/skills/qa-automation-engineer/SKILL.md`) trước khi bắt đầu.
 > Đây là **Bước 1/6** của workflow `generate_automation_from_testcases`. Sau bước này tiếp tục [Bước 2 — Analysis & UI Recon](02_analysis_and_ui_recon.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

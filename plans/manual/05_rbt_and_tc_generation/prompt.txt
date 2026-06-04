@@ -1,0 +1,61 @@
+[STEP 5 / 6 — RBT (Risk-Based Testing) + TEST CASE GENERATION]
+
+Tiếp nối Bước 4 (RTM đã hoàn chỉnh).
+
+==========================
+PHẦN A — RISK SCORING
+==========================
+Cho MỖI Functional Unit, đánh giá:
+
+- **Likelihood** (1-5): xác suất xảy ra lỗi
+  + Yếu tố: complexity, dev experience, code change frequency, dependencies
+- **Impact** (1-5): mức độ thiệt hại nếu lỗi xảy ra
+  + Yếu tố: số user bị ảnh hưởng, mất dữ liệu, security, business loss
+
+Risk Score = Likelihood × Impact
+
+| Score | Risk Level | Test Depth |
+|---|---|---|
+| 1-6 | LOW | Smoke + Happy Path |
+| 7-14 | MEDIUM | Happy + Negative + 1-2 Boundary |
+| 15-25 | HIGH | Full EP/BVA + Decision Table + Edge cases + Security |
+
+==========================
+PHẦN B — TEST CASE GENERATION
+==========================
+Áp dụng kỹ thuật tương ứng với Risk Level:
+
+- **EP (Equivalence Partitioning)**: chia input thành các lớp tương đương (valid / invalid / boundary)
+- **BVA (Boundary Value Analysis)**: min-1, min, min+1, max-1, max, max+1
+- **Decision Table**: cho business rules có nhiều conditions
+- **State Transition**: cho features có states (workflow, status)
+- **Pairwise**: khi quá nhiều combinations
+
+==========================
+QUY TẮC SINH TEST CASE
+==========================
+1. Mỗi field validation = 1 TC riêng (Email ≠ Phone ≠ Date — checklist khác nhau)
+2. Bao phủ Happy + Negative + Boundary + Edge + Security (XSS, SQLi cho text field)
+3. Test data CỤ THỂ (không placeholder). Random + traceable.
+4. Test Steps đánh số rõ ràng. Expected Result rõ ràng.
+5. Mỗi TC ĐỘC LẬP — không phụ thuộc TC trước (trừ khi declared explicit)
+6. **TUYỆT ĐỐI KHÔNG** rút gọn / bỏ sót TC để fit time
+
+==========================
+OUTPUT FORMAT (cho Bước 5)
+==========================
+Output dạng list (chưa cần bảng đẹp — bảng làm ở Bước 6):
+
+```
+[FU_EMAIL] - Risk: HIGH (5x4=20)
+- TC_LOGIN_EMAIL_001: Happy — Valid email "user@domain.com" → success
+- TC_LOGIN_EMAIL_002: Negative — Empty → error "Email is required"
+- TC_LOGIN_EMAIL_003: Negative — Invalid format "abc" → error "Invalid email"
+- TC_LOGIN_EMAIL_004: Boundary — 254 chars (max RFC) → success
+- TC_LOGIN_EMAIL_005: Boundary — 255 chars (over max) → error
+- TC_LOGIN_EMAIL_006: Security — XSS payload → escaped, no script execution
+- TC_LOGIN_EMAIL_007: Security — SQL injection ' OR '1'='1 → no DB error leaked
+…
+```
+
+Khi xong, tôi review. Sau đó sang Bước 6: Map sang bảng Test Cases chuẩn.

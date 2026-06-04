@@ -6,3 +6,30 @@
 # OS files
 Thumbs.db
 .DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Secrets (CRITICAL — never commit)
+.env
+.env.local
+.env.*.local
+**/.env
+**/service-account.json
+**/.xray_token
+
+# Integration script outputs
+scripts/integrations/output/
+
+# IDE
+.idea/
+*.iml
+.vs/
+
+# Editor temp
+*.swp
+*.swo
+*~

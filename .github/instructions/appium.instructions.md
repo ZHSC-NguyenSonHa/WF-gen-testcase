@@ -1,127 +1,75 @@
 ---
-description: Quy tắc Appium Mobile Automation (locator native iOS/Android, WebDriverWait, scroll, Screen Objects, đặc thù mobile).
+description: Đặc thù Appium Mobile (locator native iOS/Android, scroll, mobile lifecycle). Quy tắc chung xem automation.instructions.md.
 applyTo: '**/*.java'
 ---
 
-# Quy Tắc Dành Riêng Cho Appium (Mobile Automation)
+# Quy Tắc Appium Mobile (Đặc Thù)
 
-> Áp dụng khi tự động hóa ứng dụng mobile với Java và Appium.
+> Quy tắc chung (POM/Screen Objects, Smart Waits, Test Data, Assertions, TestNG template) đã ở `automation.instructions.md`. File này chỉ chứa **đặc thù mobile**.
 
-## 1. Thứ Tự Ưu Tiên Locator
+## 1. Thứ Tự Ưu Tiên Locator (Native)
 
-Sử dụng chiến lược locator native theo từng nền tảng (iOS / Android) thay vì web equivalent:
+1. `accessibility id` — cross-platform, ổn định nhất
+2. `resource-id` (Android) — thuộc tính native
+3. `id` — chung
+4. `iOS predicate string` — nhanh, chuyên iOS
+5. `iOS class chain` — truy vấn cấu trúc iOS
+6. `xpath` — cuối cùng (chậm, cấm XPath tuyệt đối)
 
-1. `accessibility id` — Cross-platform, ổn định nhất
-2. `resource-id` (Android) — Thuộc tính native Android
-3. `id` — ID chung
-4. `iOS predicate string` (iOS) — Nhanh, chuyên biệt iOS
-5. `iOS class chain` (iOS) — Truy vấn cấu trúc iOS
-6. `xpath` — Lựa chọn cuối cùng (chậm nhất)
-
-Ví dụ đúng:
 ```java
-// Accessibility id — Cross-platform, luôn ưu tiên
+// ✅ Cross-platform (luôn ưu tiên)
 driver.findElement(AppiumBy.accessibilityId("login_button"));
 
-// Android — resource-id
-driver.findElement(AppiumBy.id("com.application.xyz:id/login_button"));
+// Android
+driver.findElement(AppiumBy.id("com.app.xyz:id/login_button"));
 
-// iOS — Predicate String (nhanh)
+// iOS
 driver.findElement(AppiumBy.iOSNsPredicateString("label == 'Login'"));
+driver.findElement(AppiumBy.iOSClassChain("**/XCUIElementTypeButton[`label == 'Login'`]"));
+```
 
-// iOS — Class Chain
-driver.findElement(AppiumBy.iOSClassChain(
-    "**/XCUIElementTypeButton[`label == 'Login'`]"
+## 2. Cấm
+
+- XPath tuyệt đối dựa cấu trúc layout (đặc biệt nguy hiểm trên mobile do layout dynamic).
+- Truy vấn element off-screen mà không scroll trước.
+- Tương tác element disabled mà không kiểm tra trạng thái.
+- Hardcode chờ animation.
+
+## 3. Scroll Đến Element
+
+```java
+// Android UiScrollable
+driver.findElement(AppiumBy.androidUIAutomator(
+    "new UiScrollable(new UiSelector().scrollable(true))" +
+    ".scrollIntoView(new UiSelector().text(\"Submit\"))"
 ));
 ```
 
-## 2. NGHIÊM CẤM
-
-- XPath tuyệt đối dựa trên vị trí — bất kỳ thay đổi layout nhỏ nào cũng gây fail:
-  ```java
-  // NGHIÊM CẤM:
-  driver.findElement(By.xpath(
-      "//android.widget.FrameLayout[1]/android.widget.LinearLayout[2]/android.widget.Button[1]"
-  ));
-  ```
-- Truy vấn element nằm ngoài màn hình (off-screen) mà không scroll trước
-- Tương tác với element bị disabled mà không kiểm tra trạng thái
-- Hardcode thời gian chờ animation
-
-## 3. Chiến Lược Chờ Đợi (Wait Strategy)
-
-**NGHIÊM CẤM:**
-- `Thread.sleep()` — Trong mọi trường hợp
-
-**SỬ DỤNG:**
-- Explicit Waits với `WebDriverWait`:
-  ```java
-  WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-
-  // Chờ element hiển thị
-  wait.until(ExpectedConditions.visibilityOfElementLocated(
-      AppiumBy.accessibilityId("welcome_text")
-  ));
-
-  // Chờ element click được
-  wait.until(ExpectedConditions.elementToBeClickable(
-      AppiumBy.accessibilityId("submit_button")
-  ));
-  ```
-
-- Xử lý scroll đến element:
-  ```java
-  // Android — UiScrollable
-  driver.findElement(AppiumBy.androidUIAutomator(
-      "new UiScrollable(new UiSelector().scrollable(true))" +
-      ".scrollIntoView(new UiSelector().text(\"Submit\"))"
-  ));
-  ```
-
-## 4. Cấu Trúc Test (TestNG)
+## 4. ExpectedConditions cho Mobile
 
 ```java
-public class LoginMobileTest extends BaseTest {
-
-    @BeforeMethod
-    public void setUp() {
-        // Khởi tạo driver, capabilities...
-    }
-
-    @Test(groups = {"mobile", "regression"})
-    public void testLoginSuccess() {
-        // Arrange
-        LoginScreen loginScreen = new LoginScreen(driver);
-        String email = DataGenerator.generateEmail("loginMobile");
-
-        // Act
-        loginScreen.login(email, "ValidPass@123");
-
-        // Assert
-        HomeScreen homeScreen = new HomeScreen(driver);
-        Assert.assertTrue(homeScreen.isWelcomeDisplayed(),
-            "Màn hình Home phải hiển thị sau khi đăng nhập");
-    }
-}
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+wait.until(ExpectedConditions.visibilityOfElementLocated(
+    AppiumBy.accessibilityId("welcome_text")
+));
+wait.until(ExpectedConditions.elementToBeClickable(
+    AppiumBy.accessibilityId("submit_button")
+));
 ```
-
-Lưu ý:
-- Mobile dùng **Screen Objects** (tương đương Page Objects) — hậu tố `Screen`
-- Ví dụ: `LoginScreen.java`, `HomeScreen.java`, `SettingsScreen.java`
 
 ## 5. Đặc Thù Mobile Testing
 
-- **Xoay màn hình:** Test cả portrait và landscape nếu app hỗ trợ:
+- **Screen Objects:** dùng hậu tố `Screen` thay `Page` (`LoginScreen`, `HomeScreen`).
+- **Xoay màn hình:** test cả portrait + landscape nếu app hỗ trợ.
   ```java
   driver.rotate(ScreenOrientation.LANDSCAPE);
   ```
-- **Background/Foreground:** Test app khi chuyển ra nền rồi quay lại:
+- **Background/Foreground:** test khi app chuyển nền rồi quay lại.
   ```java
   driver.runAppInBackground(Duration.ofSeconds(5));
   ```
-- **Push Notification:** Verify notification bằng Appium notification listener
-- **Permission Dialog:** Xử lý dialog xin quyền (camera, location...):
+- **Permission Dialog:** auto-grant trong capabilities Android.
   ```java
-  // Android — Auto-grant permissions trong capabilities
   capabilities.setCapability("autoGrantPermissions", true);
   ```
+- **Push Notification:** verify bằng Appium notification listener.

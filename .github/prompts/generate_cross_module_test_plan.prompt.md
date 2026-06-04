@@ -1,6 +1,6 @@
 ---
 description: Phân tích tính năng đi qua nhiều modules nối tiếp, xây dựng Module Map + Dimension Catalog, và sinh ma trận kết hợp (Pairwise/Business-critical/Full Cartesian). Hỗ trợ 2 modes — DOCUMENT (từ tài liệu) và BROWSER (inspect DOM thực tế).
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
@@ -9,8 +9,8 @@ tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 > **Dùng khi:** Tính năng cần test đi qua **nhiều modules nối tiếp nhau**, mỗi module có nhiều lựa chọn (dimensions), và bộ kết hợp các lựa chọn quyết định output cuối cùng.
 
 > **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.github/skills/qa_automation_engineer/SKILL.md` — Workflow routing + automation rules
-> - **Skill:** `.github/skills/requirements_analyzer/SKILL.md` — Phân tích requirements
+> - **Skill:** `.github/skills/qa-automation-engineer/SKILL.md` — Workflow routing + automation rules
+> - **Skill:** `.github/skills/requirements-analyzer/SKILL.md` — Phân tích requirements
 
 ---
 

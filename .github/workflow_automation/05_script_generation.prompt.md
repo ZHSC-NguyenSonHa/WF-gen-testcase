@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 5/6] Sinh test script hoàn chỉnh, tự chạy và self-fix loop đến khi PASS."
-mode: agent
-tools: ['codebase', 'editFiles', 'runCommands', 'search', 'usages', 'testFailure']
+name: automation-step-5-script
+agent: agent
+tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages', 'testFailure']
 ---
 
 # Workflow Automation — Bước 5: Sinh Mã Automation (Script Generation)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa_automation_engineer`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa-automation-engineer`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review POM (Bước 3) và Data (Bước 4). Tiếp theo: [Bước 6 — Review & Refactor](06_review_and_refactor.prompt.md).
 > Tham khảo rules theo framework: `.github/instructions/playwright.instructions.md`, `selenium.instructions.md`, `appium.instructions.md`.
 

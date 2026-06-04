@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 4/6] Thiết kế Test Data Strategy — sinh class Data Generator unique + traceable, không hardcode."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'usages']
+name: automation-step-4-test-data
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Automation — Bước 4: Chiến Lược Dữ Liệu (Test Data Strategy)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa_automation_engineer`** + **`test_data_generator`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa-automation-engineer`** + **`test-data-generator`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review POM ở [Bước 3 — POM Design](03_pom_design.prompt.md). Tiếp theo: [Bước 5 — Script Generation](05_script_generation.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

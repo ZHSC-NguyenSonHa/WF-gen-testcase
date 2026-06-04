@@ -1,12 +1,13 @@
 ---
 description: "[Manual Workflow - Bước 5/6] Sinh test case chi tiết theo Risk-Based Testing với field-level validation và test design techniques."
-mode: agent
-tools: ['codebase', 'editFiles', 'search']
+name: manual-step-5-rbt-tcgen
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 5: Sinh Test Case Chi Tiết (RBT & TC Generation)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review scenarios ở [Bước 4 — Traceability](04_traceability.prompt.md). Tiếp theo: [Bước 6 — Template Mapping](06_template_mapping.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

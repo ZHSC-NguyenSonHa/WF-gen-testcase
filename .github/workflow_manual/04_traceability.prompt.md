@@ -1,12 +1,13 @@
 ---
 description: "[Manual Workflow - Bước 4/6] Xây Traceability Matrix, Gap Analysis và High-Level Test Scenarios để đảm bảo độ bao phủ."
-mode: agent
-tools: ['codebase', 'editFiles', 'search']
+manname: manual-step-4-traceability
+agent: agent
+tools: ['codebase', 'editFiles', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Manual — Bước 4: Đảm Bảo Độ Bao Phủ (Traceability & Gap Analysis)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt_manual_testing`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`rbt-manual-testing`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã review phân rã ở [Bước 3 — Decomposition](03_decomposition.prompt.md). Tiếp theo: [Bước 5 — RBT & TC Generation](05_rbt_and_tc_generation.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

@@ -1,0 +1,10 @@
+{
+  "// description": "MCP server config for Playwright. Copy this file value-by-value or rename to mcp.json after editing. See https://code.visualstudio.com/docs/copilot/customization/mcp-servers",
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "type": "stdio"
+    }
+  }
+}

@@ -1,12 +1,13 @@
 ---
 description: "[Automation Workflow - Bước 2/6] AI tự mở browser (MCP), inspect DOM thật và thu thập bảng locators từ Manual Test Cases."
-mode: agent
-tools: ['codebase', 'editFiles', 'search', 'usages', 'fetch']
+name: automation-step-2-ui-recon
+agent: agent
+tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
 # Workflow Automation — Bước 2: Phân Tích & Điều Tra UI (Analysis & UI Recon)
 
-> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa_automation_engineer`** + **`ui_debug_agent`** trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Nạp skill **`qa-automation-engineer`** + **`ui-debug-agent`** trước khi bắt đầu.
 > Gửi prompt này **SAU KHI** đã hoàn thành [Bước 1 — Context & Role-play](01_context_and_roleplay.prompt.md). Tiếp theo: [Bước 3 — POM Design](03_pom_design.prompt.md).
 
 ## ⚠️ Nguyên tắc thực thi

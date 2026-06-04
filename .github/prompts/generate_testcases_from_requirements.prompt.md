@@ -1,14 +1,14 @@
 ---
 description: Sinh manual test cases nhanh từ requirements (QUICK mode — không qua quy trình 6 bước).
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.github/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode QUICK** của skill.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt-manual-testing`** (tại `.github/skills/rbt-manual-testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode QUICK** của skill.
 
 # Workflow: Sinh Manual Test Cases Nhanh từ Requirements
 
-Workflow này sử dụng **Mode QUICK** của skill `rbt_manual_testing` để sinh test cases nhanh từ requirements đã sẵn có.
+Workflow này sử dụng **Mode QUICK** của skill `rbt-manual-testing` để sinh test cases nhanh từ requirements đã sẵn có.
 
 ## ⚠️ Nguyên tắc
 
@@ -29,7 +29,7 @@ Workflow này sử dụng **Mode QUICK** của skill `rbt_manual_testing` để 
 4. **Validation chuyên biệt từng trường (Field-Level Validation):**
    - Liệt kê tất cả input fields trên form/UI
    - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng (text, email, phone, date, number, dropdown, file upload, password...)
-   - Áp dụng **Bảng Field-Level Validation** trong skill `rbt_manual_testing` để chọn validation phù hợp
+   - Áp dụng **Bảng Field-Level Validation** trong skill `rbt-manual-testing` để chọn validation phù hợp
    - **KHÔNG** gộp validation nhiều trường vào 1 test case
 5. **Sinh test cases đầy đủ fields:**
    - TC ID (format: `[DỰ_ÁN]_[MODULE]_TC_[SỐ]`)

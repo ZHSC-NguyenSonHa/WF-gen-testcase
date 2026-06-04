@@ -1,6 +1,6 @@
 ---
 description: Sinh test data cho ma trận kết hợp đa chiều bằng pipeline chạy thật qua nhiều modules. Input từ /generate_cross_module_test_plan.
-mode: agent
+agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
@@ -9,9 +9,9 @@ tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 > **Dùng khi:** Đã có ma trận kết hợp (từ `/generate_cross_module_test_plan`) và cần **tạo test data thực tế** bằng cách chạy qua nhiều modules trên browser, hoặc sinh bộ data có cấu trúc sẵn sàng cho automation.
 
 > **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.github/skills/test_data_generator/SKILL.md` — Quy tắc sinh data (xem phần Multi-Step Pipeline)
-> - **Skill:** `.github/skills/ui_debug_agent/SKILL.md` — Inspect DOM khi chạy browser
-> - **Workflow:** `.github/prompts/generate_cross_module_test_plan.md` — Hiểu cấu trúc ma trận đầu vào
+> - **Skill:** `.github/skills/test-data-generator/SKILL.md` — Quy tắc sinh data (xem phần Multi-Step Pipeline)
+> - **Skill:** `.github/skills/ui-debug-agent/SKILL.md` — Inspect DOM khi chạy browser
+> - **Workflow:** `.github/prompts/generate_cross_module_test_plan.prompt.md` — Hiểu cấu trúc ma trận đầu vào
 
 ---
 

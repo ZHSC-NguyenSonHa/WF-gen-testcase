@@ -1,0 +1,22 @@
+{
+  "name": "qa-automation-integrations",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Integration scripts for Jira/Xray and Google Sheets used by QA Automation Kit",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "jira:fetch": "node jira/jira_fetcher.js",
+    "xray:auth": "node jira/xray_auth.js",
+    "xray:import": "node jira/xray_importer.js",
+    "sheet:auth": "node google_sheet/sheet_auth.js",
+    "sheet:read": "node google_sheet/sheet_reader.js",
+    "sheet:write": "node google_sheet/sheet_writer.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0"
+  }
+}
