@@ -166,14 +166,18 @@ function buildTcSheet(ws, opts) {
   return total;
 }
 
-// --- Build sheet Summary (bám layout mẫu Push: lề cột A, label B:F, value G:N) ---
+// --- Build sheet Summary (bám layout mẫu Push: lề cột A, label B:F) ----------
+// Chuỗi công thức self-consistent (không bao giờ lệch):
+//   Detail  -> tham chiếu '<sheet>'!G2..G6 (First) & H2..H6 (Last) của từng tab.
+//   Total   -> SUM xuống các cột của Detail.
+// Mỗi tab TC expose: G2/H2=Total test case, G3/H3=OK, G4/H4=NG, G5/H5=Pending,
+// G6/H6=Skip (G=First time, H=Last time).
 function buildSummary(ws, opts) {
   const { meta, devices, sheetMeta, styleCell } = opts;
   const LBL_C1 = 2, LBL_C2 = 6;   // label  B:F
-  const VAL_C1 = 7, VAL_C2 = 14;  // value  G:N
-  const NUM_C1 = 7;               // cột số đầu tiên (Detail)
+  const colL = (n) => colLetter(n);
 
-  // ■ Common information ------------------------------------------------------
+  // ■ Common information (rows 1-11) ------------------------------------------
   ws.getCell('A1').value = '■ Common information';
   ws.getCell('A1').font = { ...FONT, bold: true };
   const common = [
@@ -191,63 +195,88 @@ function buildSummary(ws, opts) {
   let r = 2;
   common.forEach(([k, v]) => {
     styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: GRAY }, k);
-    styleRange(ws, styleCell, r, VAL_C1, r, VAL_C2, { fillArgb: WHITE }, v);
+    styleRange(ws, styleCell, r, 7, r, 17, { fillArgb: WHITE }, v); // value G:Q
     r++;
   });
-  r++; // dòng trống
 
-  // Tính trước vị trí Detail để Total SUM tham chiếu (forward ref hợp lệ trong Excel)
-  const nTotalItems = 4; // Total test case, OK, NG, Pending
-  const rTotalHdr = r;                       // ■ Total summary
-  const rTotalFirst = rTotalHdr + 1;         // dòng item đầu
-  const rDetailHdr = rTotalFirst + nTotalItems + 1; // ■ Detail summary (cách 1 dòng trống)
-  const rDetailTableHdr = rDetailHdr + 1;
-  const detailStart = rDetailTableHdr + 1;
-  const detailEnd = detailStart + sheetMeta.length - 1;
+  // --- Khai báo trước hình học để công thức tham chiếu chéo (forward ref OK) --
+  // Detail summary cột: G=Created | First[H..L]=Total,OK,NG,Pending,Skip
+  //                                 | Last[M..Q]=Total,OK,NG,Pending,Skip
+  const CR = 7;                       // Created
+  const F = { total: 8, ok: 9, ng: 10, pend: 11, skip: 12 };  // First  H..L
+  const L = { total: 13, ok: 14, ng: 15, pend: 16, skip: 17 }; // Last   M..Q
+
+  const rTotalHdr   = 13;             // ■ Total summary
+  const rTotalTbl   = 14;             // header bảng (Item | First time | Last time)
+  const rTF         = 15;             // dòng item đầu
+  // Thứ tự item Total summary -> ánh xạ ra dòng cố định:
+  const TI = { total: rTF, tested: rTF + 1, ok: rTF + 2, ng: rTF + 3, pend: rTF + 4, skip: rTF + 5, pTested: rTF + 6, pOK: rTF + 7, pNG: rTF + 8 };
+  const rTotalEnd   = TI.pNG;         // = rTF + 8 (= 23)
+  const rDetailHdr  = rTotalEnd + 2;  // ■ Detail summary (cách 1 dòng trống)
+  const rDetailGrp  = rDetailHdr + 1; // group header
+  const rDetailSub  = rDetailHdr + 2; // sub header
+  const detailStart = rDetailHdr + 3;
+  const detailEnd   = detailStart + sheetMeta.length - 1;
 
   // ■ Total summary -----------------------------------------------------------
   ws.getCell(rTotalHdr, 1).value = '■ Total summary';
   ws.getCell(rTotalHdr, 1).font = { ...FONT, bold: true };
-  const colL = (n) => colLetter(n);
-  const totItems = [
-    ['Total test case', NUM_C1],     // G của Detail
-    ['OK', NUM_C1 + 1],              // H
-    ['NG', NUM_C1 + 2],              // I
-    ['Pending', NUM_C1 + 3],         // J
-  ];
-  r = rTotalFirst;
-  totItems.forEach(([k, cIdx]) => {
-    styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: GRAY }, k);
-    styleRange(ws, styleCell, r, VAL_C1, r, VAL_C2, { fillArgb: WHITE, center: true },
-      { formula: `SUM(${colL(cIdx)}${detailStart}:${colL(cIdx)}${detailEnd})` });
-    r++;
-  });
+  // header bảng: Item(B:F) | First time(G) | Last time(H)
+  styleRange(ws, styleCell, rTotalTbl, LBL_C1, rTotalTbl, LBL_C2, { fillArgb: GRAY, center: true, bold: true }, 'Item');
+  styleRange(ws, styleCell, rTotalTbl, 7, rTotalTbl, 7, { fillArgb: GRAY, center: true, bold: true }, 'First time');
+  styleRange(ws, styleCell, rTotalTbl, 8, rTotalTbl, 8, { fillArgb: GRAY, center: true, bold: true }, 'Last time');
+
+  // helper đặt 1 dòng item: label B:F + giá trị First(G) + Last(H)
+  const sum = (col) => `SUM(${colL(col)}${detailStart}:${colL(col)}${detailEnd})`;
+  const setItem = (rowR, label, firstFormula, lastFormula, isPct) => {
+    styleRange(ws, styleCell, rowR, LBL_C1, rowR, LBL_C2, { fillArgb: GRAY }, label);
+    styleRange(ws, styleCell, rowR, 7, rowR, 7, { fillArgb: WHITE, center: true }, { formula: firstFormula });
+    styleRange(ws, styleCell, rowR, 8, rowR, 8, { fillArgb: WHITE, center: true }, { formula: lastFormula });
+    if (isPct) { ws.getCell(rowR, 7).numFmt = '0%'; ws.getCell(rowR, 8).numFmt = '0%'; }
+  };
+  // số liệu: SUM xuống Detail
+  setItem(TI.total, 'Total test case', sum(F.total), sum(L.total));
+  setItem(TI.tested, 'Tested', `G${TI.ok}+G${TI.ng}+G${TI.pend}+G${TI.skip}`, `H${TI.ok}+H${TI.ng}+H${TI.pend}+H${TI.skip}`);
+  setItem(TI.ok, 'OK', sum(F.ok), sum(L.ok));
+  setItem(TI.ng, 'NG', sum(F.ng), sum(L.ng));
+  setItem(TI.pend, 'Pending', sum(F.pend), sum(L.pend));
+  setItem(TI.skip, 'Skip', sum(F.skip), sum(L.skip));
+  // tỉ lệ %
+  setItem(TI.pTested, '% Tested', `IF(G${TI.total}=0,"-",G${TI.tested}/G${TI.total})`, `IF(H${TI.total}=0,"-",H${TI.tested}/H${TI.total})`, true);
+  setItem(TI.pOK, '% OK', `IF(G${TI.tested}=0,"-",G${TI.ok}/G${TI.tested})`, `IF(H${TI.tested}=0,"-",H${TI.ok}/H${TI.tested})`, true);
+  setItem(TI.pNG, '% NG', `IF(G${TI.tested}=0,"-",G${TI.ng}/G${TI.tested})`, `IF(H${TI.tested}=0,"-",H${TI.ng}/H${TI.tested})`, true);
 
   // ■ Detail summary ----------------------------------------------------------
   ws.getCell(rDetailHdr, 1).value = '■ Detail summary';
   ws.getCell(rDetailHdr, 1).font = { ...FONT, bold: true };
-  // header: Sheet name / Function name (B:F) | Total | OK | NG | Pending | Tester
-  styleRange(ws, styleCell, rDetailTableHdr, LBL_C1, rDetailTableHdr, LBL_C2, { fillArgb: GRAY, center: true, bold: true }, 'Sheet name / Function name');
-  ['Total', 'OK', 'NG', 'Pending', 'Tester'].forEach((h, i) =>
-    styleRange(ws, styleCell, rDetailTableHdr, NUM_C1 + i, rDetailTableHdr, NUM_C1 + i, { fillArgb: GRAY, center: true, bold: true }, h));
+  // group header (merge dọc 2 dòng): Sheet name/Function name | Created | First time | Last time
+  styleRange(ws, styleCell, rDetailGrp, LBL_C1, rDetailSub, LBL_C2, { fillArgb: GRAY, center: true, bold: true }, 'Sheet name / Function name');
+  styleRange(ws, styleCell, rDetailGrp, CR, rDetailSub, CR, { fillArgb: GRAY, center: true, bold: true }, 'Created');
+  styleRange(ws, styleCell, rDetailGrp, F.total, rDetailGrp, F.skip, { fillArgb: GRAY, center: true, bold: true }, 'First time');
+  styleRange(ws, styleCell, rDetailGrp, L.total, rDetailGrp, L.skip, { fillArgb: GRAY, center: true, bold: true }, 'Last time');
+  // sub header
+  const subs = ['Total', 'OK', 'NG', 'Pending', 'Skip'];
+  subs.forEach((s, i) => styleRange(ws, styleCell, rDetailSub, F.total + i, rDetailSub, F.total + i, { fillArgb: GRAY, center: true, bold: true }, s));
+  subs.forEach((s, i) => styleRange(ws, styleCell, rDetailSub, L.total + i, rDetailSub, L.total + i, { fillArgb: GRAY, center: true, bold: true }, s));
+  // dữ liệu từng sheet
   r = detailStart;
   sheetMeta.forEach(m => {
     styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: WHITE }, `${m.sheet} (${m.func})`);
-    const nums = [
-      { formula: `'${m.sheet}'!G2` },
-      { formula: `'${m.sheet}'!G3` },
-      { formula: `'${m.sheet}'!G4` },
-      { formula: `'${m.sheet}'!G5` },
-      meta.creator,
-    ];
-    nums.forEach((v, i) => styleRange(ws, styleCell, r, NUM_C1 + i, r, NUM_C1 + i, { fillArgb: WHITE, center: (i <= 3) }, v));
+    styleRange(ws, styleCell, r, CR, r, CR, { fillArgb: WHITE, center: true }, meta.creator);
+    // First time: '<sheet>'!G2..G6
+    ['G2', 'G3', 'G4', 'G5', 'G6'].forEach((cell, i) =>
+      styleRange(ws, styleCell, r, F.total + i, r, F.total + i, { fillArgb: WHITE, center: true }, { formula: `'${m.sheet}'!${cell}` }));
+    // Last time: '<sheet>'!H2..H6
+    ['H2', 'H3', 'H4', 'H5', 'H6'].forEach((cell, i) =>
+      styleRange(ws, styleCell, r, L.total + i, r, L.total + i, { fillArgb: WHITE, center: true }, { formula: `'${m.sheet}'!${cell}` }));
     r++;
   });
 
-  // Cột: A lề mỏng, B:F label, G:N value
+  // Cột: A lề mỏng | B:F label | G Created | H:Q số liệu
   ws.getColumn(1).width = 3;
-  [2, 3, 4, 5, 6].forEach(c => ws.getColumn(c).width = 14);
-  [7, 8, 9, 10, 11, 12, 13, 14].forEach(c => ws.getColumn(c).width = 11);
+  [2, 3, 4, 5, 6].forEach(c => ws.getColumn(c).width = 12);
+  ws.getColumn(7).width = 12;
+  [8, 9, 10, 11, 12, 13, 14, 15, 16, 17].forEach(c => ws.getColumn(c).width = 8);
 }
 
 /**
