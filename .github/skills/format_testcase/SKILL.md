@@ -29,15 +29,14 @@ Sử dụng skill này khi user yêu cầu:
 - chuẩn hóa output Excel test case
 - tạo file testcase GUI và Logic
 - merge Test Object bị trùng
-- run lệnh Copy-Item -Path "C:\Users\Z03479\Desktop\manual_test\Q\Q\Test Result\1.0.0(Thư viện)\App\Base noti\【APP】_Push.xlsx" -Destination "C:\Users\Z03479\Desktop\manual_test\Q\Q\Test Result\7.4.0" -Force; Test-Path "C:\Users\Z03479\Desktop\manual_test\Q\Q\Test Result\7.4.0\【APP】_Push.xlsx"
-- tạo testcase Excel theo style QA team
+- tạo testcase Excel theo style QA team từ template canonical
 
 Ví dụ trigger:
 
 - "format file testcase này theo mẫu đã dạy"
 - "thêm sheet summary cho file testcase"
 - "chia logic theo đúng 4 mục trong spec"
-- "duplicate file `Q/Test Result/1.0.0(Thư viện)/App/Base noti/【APP】_Push.xlsx` để lấy template format rồi fill dữ liệu testcase vào"
+- "sinh file testcase từ template canonical `templates/testcase/app-testcase-template.xlsx`"
 - "merge Test Object để đỡ duplicate"
 
 ---
@@ -257,6 +256,9 @@ Hãy tạo file testcase manual từ spec tôi cung cấp và bắt buộc tuân
 
 ## Gợi ý triển khai trong repo này
 
-- Nếu đầu ra là Excel, ưu tiên tái sử dụng script trong `scripts/convert_excel/`
+- **Template canonical:** `templates/testcase/app-testcase-template.xlsx` (xem `templates/testcase/README.md`)
+- **Engine Copy+Fill:** `scripts/convert_excel/testcase_builder.js` — load template, clone Home_GUI → `<prefix>_GUI` + `<prefix>_LOGIC`, fill data, giữ NGUYÊN màu/border/font/formula
+- **Skeleton mỗi feature:** copy `scripts/convert_excel/gen_testcase.template.js` → `gen_<feature>.js`, sửa metadata + điền data, chạy: `node scripts/convert_excel/gen_<feature>.js "<output.xlsx>"`
 - Nếu đã có generator gần giống, sửa generator hiện có thay vì viết lại từ đầu
-- Nếu file đích bị khóa, tạo file fallback mới có suffix ngày giờ để user dùng ngay
+- Nếu file đích bị khóa (đang mở trong Excel), tạo file fallback mới có suffix ngày giờ
+- KHÔNG sửa trực tiếp file template canonical — luôn copy ra rồi fill

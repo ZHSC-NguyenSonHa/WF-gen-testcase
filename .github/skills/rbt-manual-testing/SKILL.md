@@ -176,16 +176,19 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
 **Mục đích:** Thiết lập vai trò Senior QA Engineer và nạp bối cảnh dự án.
 
 **Agent phải:**
-1. Yêu cầu user cung cấp:
-   - Tên dự án / tính năng
+1. Yêu cầu user cung cấp **đầy đủ thông tin sau** (cần để build path output ở Bước 6):
+   - Tên dự án / tính năng (vd: `Popup Claim`)
    - Mô tả hệ thống hiện tại
    - Mục tiêu kiểm thử MVP
    - Tài liệu yêu cầu (Requirements, User Stories, Figma link, PDF...)
+   - **Release tag** (vd: `7.4.0`) — dùng cho path `Test Result/<release>/...`
+   - **Folder đích** trong `Test Result/<release>/App/` (vd: `Base Popup`, `Base coupon`)
+   - **Tester / Creator name** (vd: `QuynhNT`)
 2. Đọc kỹ tài liệu và xác nhận đã hiểu bối cảnh
 3. Tóm tắt scope kiểm thử
 4. **Chờ user xác nhận** trước khi sang Bước 2
 
-**Output:** Xác nhận hiểu bối cảnh + tóm tắt scope kiểm thử.
+**Output:** Xác nhận hiểu bối cảnh + tóm tắt scope kiểm thử + thông tin release/folder/tester.
 
 ---
 
@@ -222,8 +225,9 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
    - **Theo luồng:** Flow tạo mới, Flow chỉnh sửa, Flow xóa...
 2. Mô tả ngắn gọn chức năng từng Module
 3. Chỉ ra Dependencies giữa các Module
+4. **DỪNG LẠI — Chờ user xác nhận decomposition** (user có thể thêm/bớt/đổi tên module) trước khi sang Bước 4
 
-**Output:** Danh sách Modules/Sub-modules + Dependencies.
+**Output:** Danh sách Modules/Sub-modules + Dependencies (đã được user duyệt).
 
 ---
 
@@ -254,10 +258,17 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
 **Mục đích:** Sinh test cases chi tiết theo chiến lược Risk-Based Testing.
 
 **Agent phải:**
-1. Đánh giá Risk Level cho mỗi Module:
-   - **High Risk:** Test kỹ, nhiều cases (nghiệp vụ quan trọng, liên quan tiền, bảo mật)
-   - **Medium Risk:** Test vừa phải
-   - **Low Risk:** Test cơ bản, happy path
+1. Đánh giá **Risk Level** cho mỗi Module theo rubric `Risk = Impact × Probability`:
+
+   | Impact \ Probability | Low (hiếm) | Medium | High (thường xuyên) |
+   |---|---|---|---|
+   | **High** (mất tiền/data, security, crash) | Medium | **High** | **High** |
+   | **Medium** (UX kém, lỗi nghiệp vụ nhẹ) | Low | Medium | **High** |
+   | **Low** (cosmetic, edge case hiếm) | Low | Low | Medium |
+
+   - **High Risk:** coverage ≥ 90% — Happy + Negative + Boundary + Edge đầy đủ (nghiệp vụ quan trọng, tiền, bảo mật)
+   - **Medium Risk:** coverage ~ 70% — Happy + Negative chính + 1-2 Boundary
+   - **Low Risk:** coverage ~ 40% — Happy path + 1-2 Negative chính
 2. Sinh test case với đầy đủ fields:
    - Module / Sub-module
    - Test Case Title
@@ -288,23 +299,47 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
 
 ### Bước 6: Template Mapping (Chuẩn hóa Format)
 
-**Mục đích:** Đóng gói test cases thành bảng Markdown chuẩn, sẵn sàng copy sang Excel/Jira.
+**Mục đích:** Đóng gói test cases thành **2 artifact** deliverable.
 
 **Agent phải:**
-1. Chuẩn hóa toàn bộ test cases vào bảng Markdown:
+
+1. **Xuất bảng Markdown** (preview / chia sẻ nhanh):
 
 ```
 | TC ID | Module | Risk Level | Test Title | Pre-Condition | Test Steps | Expected Result | Priority | Test Data |
 ```
 
-2. Quy tắc bảng:
    - TC ID theo format thống nhất (ví dụ: `CRM_CUST_TC_001`)
    - Test Steps và Expected Result đánh số, dùng `<br>` xuống dòng trong cell
    - **TUYỆT ĐỐI không được bỏ sót** bất kỳ test case nào đã sinh ở Bước 5
    - Nếu quá dài → chia thành Part 1, Part 2... và hỏi user để tiếp tục
-3. Xuất output dưới dạng Artifact (`test_cases_<module>.md`)
+   - Xuất output dưới dạng Artifact (`test_cases_<module>.md`)
 
-**Output:** Bảng Test Cases Markdown hoàn chỉnh.
+2. **Xuất file Excel theo template canonical** (deliverable QA team — bắt buộc đúng màu/border/font/công thức):
+
+   - Dùng engine `scripts/convert_excel/testcase_builder.js` qua data file `features/gen_<feature>.js`
+   - **KHÔNG** dùng `md_to_xlsx.js` (FLAT mode) cho deliverable cuối
+   - Quy trình:
+     1. Copy `scripts/convert_excel/examples/gen_testcase.template.js` → `scripts/convert_excel/features/gen_<feature>.js`
+     2. Sửa `FUNCTION_NAME`, `CREATOR`, `CREATE_DATE`, `RELEASE`, `SHEET_PREFIX`
+     3. Điền `guiSection` (1 section UI) + `logicSections` (chia ĐÚNG số mục theo spec)
+     4. Mỗi row: `{ to, sub, input: '[Tiền điều kiện] ...\n1. ...', output: '1. ...' }`
+     5. **Tên file output theo convention `【APP】<FeatureName>.xlsx`** (giống Push gốc trong `Test Result/`, KHÔNG dùng `Testcase_<...>_<release>.xlsx`)
+     6. Chạy: `node scripts/convert_excel/features/gen_<feature>.js "Test Result/<release>/App/<folder>/【APP】<FeatureName>.xlsx"`
+   - Output 3 sheet: `Summary` + `<prefix>_GUI` + `<prefix>_LOGIC`
+   - Built-in: dropdown OK/NG/-/△ cho result cols, date format `yyyy/mm/dd` cho date cols (xem skill `excel-converter`)
+   - Tham chiếu chi tiết: skill `excel-converter`, `format_testcase`, template `templates/testcase/app-testcase-template.xlsx`
+
+3. **Verification (BẮT BUỘC — đừng skip):**
+   - File `.xlsx` tạo thành công không error
+   - Visual check bằng `Invoke-Item` / `open`
+   - Đủ 3 sheet: `Summary`, `<prefix>_GUI`, `<prefix>_LOGIC`
+   - `Summary > Detail summary` chỉ có đúng 2 rows trỏ tới 2 sheet vừa tạo
+   - `Summary > Total summary` không có `#REF!`
+   - Số rows GUI/Logic khớp với Markdown table
+   - Báo cáo cho user: số TC GUI / Logic + path file
+
+**Output:** Bảng Test Cases Markdown hoàn chỉnh + file Excel deliverable (đã verify).
 
 ---
 
@@ -357,11 +392,11 @@ Mode QUICK không yêu cầu đọc prompt templates — agent áp dụng trực
 
 | Bước | Output |
 |------|--------|
-| 1 | Xác nhận bối cảnh |
+| 1 | Xác nhận bối cảnh + release tag + folder đích |
 | 2 | Luồng + Ambiguities + Câu hỏi Q&A |
 | 3 | Module Decomposition + Dependencies |
 | 4 | Traceability Matrix + High-Level Scenarios |
 | 5 | Test Cases chi tiết (Risk Level + Test Data) |
-| 6 | Bảng Markdown chuẩn (Jira/Excel ready) |
+| 6 | **2 artifacts:** Bảng Markdown chuẩn + File Excel deliverable (`【APP】<Feature>.xlsx`) đúng template canonical |
 
 Tất cả output phải bằng **Tiếng Việt**, format **Markdown**, sử dụng **Artifact** nếu nội dung dài.

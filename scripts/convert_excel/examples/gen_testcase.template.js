@@ -3,20 +3,26 @@
 // -----------------------------------------------------------------------------
 // CÁCH DÙNG:
 //   1. Copy file này, đổi tên thành gen_<feature>.js (vd gen_popup_pizza.js)
-//   2. Sửa metadata (FUNCTION_NAME, CREATOR, ...) + sheetPrefix
+//   2. Sửa metadata (FUNCTION_NAME, CREATOR, ...) + SHEET_PREFIX
 //   3. Điền guiSection (1 section UI) + logicSections (chia ĐÚNG theo từng mục spec)
 //   4. Chạy:  node gen_<feature>.js "<đường-dẫn-output.xlsx>"
+//
+// LƯỢC ĐỒ LUỒNG (Copy+Fill):
+//   - Engine `testcase_builder.js` load template `templates/testcase/app-testcase-template.xlsx`
+//   - Clone Home_GUI → `<SHEET_PREFIX>_GUI` và `<SHEET_PREFIX>_LOGIC` (giữ NGUYÊN style/border/font/formula)
+//   - Fill data mới vào, auto-merge Test Object trùng theo cụm
+//   - Update Summary (common info + detail rows trỏ tới 2 sheet mới)
 //
 // LƯU Ý FORMAT (theo skill format_testcase):
 //   - Mỗi row: { to: 'Test Object', sub: 'Sub Test Object', input: '...', output: '...' }
 //   - Các row liên tiếp cùng `to` sẽ tự ĐỘNG MERGE ô Test Object (gọn, không duplicate)
 //   - Step trong `input` viết CỤ THỂ từng bước, mở đầu bằng [Tiền điều kiện] ... rồi 1. 2. 3.
 //   - logicSections phải chia đúng số mục như spec (1., 2., 3., ...)
-//   - Toàn bộ màu/border/font tự clone từ mẫu Push → KHÔNG cần style thủ công
+//   - Style/màu/border/formula tự clone từ template canonical → KHÔNG cần style thủ công
 // =============================================================================
 
 const path = require('path');
-const { generateTestcase } = require('./testcase_builder');
+const { generateTestcase } = require('../testcase_builder');
 
 const FUNCTION_NAME = 'Tên Feature';        // vd 'Popup Pizza'
 const CREATOR = 'QuynhNT';
@@ -45,7 +51,8 @@ const logicSections = [
 ];
 
 (async () => {
-  const out = process.argv[2] || path.join(__dirname, `Testcase_${FUNCTION_NAME.replace(/\s+/g, '_')}_${RELEASE}.xlsx`);
+  // Default output: 【APP】<FeatureName>.xlsx (khớp convention Push gốc trong Test Result/)
+  const out = process.argv[2] || path.join(__dirname, `【APP】${FUNCTION_NAME}.xlsx`);
   const res = await generateTestcase({
     functionName: FUNCTION_NAME,
     creator: CREATOR,

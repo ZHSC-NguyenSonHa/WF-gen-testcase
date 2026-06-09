@@ -1,0 +1,2 @@
+# Đặt các file `gen_<feature>.js` của QA team vào đây.
+# File này giữ folder không bị Git bỏ qua.

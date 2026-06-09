@@ -5,7 +5,7 @@
 // =============================================================================
 
 const path = require('path');
-const { generateTestcase } = require('./testcase_builder');
+const { generateTestcase } = require('../testcase_builder');
 
 const FUNCTION_NAME = 'Popup Claim';
 const CREATOR = 'QuynhNT';
@@ -68,7 +68,7 @@ const logicSections = [
 ];
 
 (async () => {
-  const out = process.argv[2] || path.join(__dirname, `Testcase_${FUNCTION_NAME.replace(/\s+/g, '_')}_${RELEASE}.xlsx`);
+  const out = process.argv[2] || path.join(__dirname, `【APP】${FUNCTION_NAME}.xlsx`);
   const res = await generateTestcase({
     functionName: FUNCTION_NAME,
     creator: CREATOR,

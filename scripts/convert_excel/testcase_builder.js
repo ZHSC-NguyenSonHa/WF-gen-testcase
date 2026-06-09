@@ -1,257 +1,356 @@
 // =============================================================================
-// testcase_builder.js — Reusable QA testcase Excel builder (style-cloned từ mẫu Push)
+// testcase_builder.js — Reusable QA testcase Excel builder (COPY+FILL approach)
 // -----------------------------------------------------------------------------
 // Engine chung cho MỌI file testcase. Mỗi feature chỉ cần 1 file data nhỏ rồi gọi
-// generateTestcase(config). Toàn bộ màu sắc / border / font được CLONE trực tiếp từ
-// file mẫu Push nên không bao giờ bị mất format khi regenerate.
+// generateTestcase(config). Hoạt động theo nguyên tắc Copy+Fill:
+//   1. Load canonical template (templates/testcase/app-testcase-template.xlsx)
+//   2. Clone Home_GUI thành <prefix>_GUI và <prefix>_LOGIC (giữ NGUYÊN style/border/font/formula)
+//   3. Clear data rows cũ (row 10+) trong 2 sheet vừa clone
+//   4. Fill data mới vào, sử dụng style của row 10 (section) và row 11 (data) làm anchor
+//   5. Update Summary common info + detail rows trỏ tới 2 sheet mới
+//   6. Remove các sheet phụ của template gốc
 //
 // Dùng:
 //   const { generateTestcase } = require('./testcase_builder');
 //   await generateTestcase({ functionName, creator, createDate, release, devices,
-//                            sheetPrefix, guiSections, logicSections, output });
+//                            sheetPrefix, guiSection, logicSections, output });
 // =============================================================================
 
-const ExcelJS = require('./node_modules/exceljs');
+const path = require('path');
+const ExcelJS = require('exceljs');
 
 // --- Mặc định toàn cục (có thể override qua config) --------------------------
 const DEFAULTS = {
-  // Template chuẩn (canonical) — luôn tồn tại trong repo, dùng để clone style.
-  template: 'C:\\Users\\Z03479\\Desktop\\manual_test\\Q\\Q\\Test Result\\1.0.0(Thư viện)\\App\\Base noti\\【APP】_Push.xlsx',
-  templateSheet: 'Home_GUI',
+  // Canonical template (repo-relative, cross-machine safe)
+  template: path.resolve(__dirname, '..', '..', 'templates', 'testcase', 'app-testcase-template.xlsx'),
+  templateGuiSheet: 'Home_GUI',
+  templateSummarySheet: 'Summary',
+  // Sheets phụ của template gốc — sẽ bị remove sau khi clone
+  templateExtraSheets: ['Home_GUI', 'Push History_GUI', 'Push detail_GUI', 'Push_FN_Matrix'],
   devices: ['iOS', 'Android'],
   team: 'Zapp',
-  subCols: ['First', 'Date', 'Last', 'Date', 'Tester'],
-  colWidths: { no: 5, testObject: 24, subTestObject: 28, testType: 9, input: 50, output: 55, result: 8, memo: 20, status: 12 },
+  // Anchor rows trong template (xem templates/testcase/README.md)
+  SECTION_ROW: 10,   // row mẫu cho section title (merged A:R)
+  DATA_ROW: 11,      // row mẫu cho 1 data row
+  NCOL: 18,          // tổng số cột A-R (2 device × 5 subCol + 6 fixed + 2 memo/status)
 };
 
-const GRAY = 'FFC0C0C0';
-const GRAY2 = 'FFBFBFBF';
-const WHITE = 'FFFFFFFF';
-const FONT = { name: 'Times New Roman', size: 12, color: { argb: 'FF000000' } };
+// =============================================================================
+// Helpers
+// =============================================================================
 
-const colLetter = (n) => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+// Clone 1 sheet trong cùng workbook (giữ style, formula, merge, view, column width)
+function cloneSheet(wb, srcName, destName) {
+  const src = wb.getWorksheet(srcName);
+  if (!src) throw new Error(`Source sheet "${srcName}" not found in workbook`);
+  const dest = wb.addWorksheet(destName);
 
-// --- Style capture: clone style thật từ file mẫu ----------------------------
-function captureStyles(ws) {
-  const cloneStyle = (cell) => JSON.parse(JSON.stringify(cell.style || {}));
-  return {
-    gray:    cloneStyle(ws.getCell('A2')),  // label xám, trái, có border
-    grayC:   cloneStyle(ws.getCell('A8')),  // header xám bold center
-    subHdr:  cloneStyle(ws.getCell('G9')),  // sub-header xám center
-    banner:  cloneStyle(ws.getCell('G7')),  // banner 'Test Result'
-    whiteV:  cloneStyle(ws.getCell('E1')),  // value trắng, trái
-    whiteC:  cloneStyle(ws.getCell('A11')), // trắng center (cột No)
-    whiteL:  cloneStyle(ws.getCell('B11')), // trắng trái wrap (text data)
-    section: cloneStyle(ws.getCell('A10')), // dòng tiêu đề section
-    result:  cloneStyle(ws.getCell('G11')), // cột kết quả (hồng)
-    memo:    cloneStyle(ws.getCell('Q11')), // cell memo / status
-  };
-}
+  if (src.properties) dest.properties = JSON.parse(JSON.stringify(src.properties));
+  if (src.views) dest.views = JSON.parse(JSON.stringify(src.views));
+  if (src.pageSetup) dest.pageSetup = JSON.parse(JSON.stringify(src.pageSetup));
 
-function makeStyleCell(S) {
-  return function styleCell(cell, { fillArgb, bold = false, center = false, role } = {}) {
-    let base;
-    if (role) base = S[role];
-    else if (fillArgb === GRAY || fillArgb === GRAY2) base = center ? S.grayC : S.gray;
-    else base = center ? S.whiteC : S.whiteL;
-    cell.style = JSON.parse(JSON.stringify(base || {}));
-    if (bold) cell.font = { ...(cell.font || {}), bold: true };
-  };
-}
-
-// Style TẤT CẢ cell trong vùng (rồi merge) — đảm bảo border đủ 4 cạnh.
-// Excel chỉ vẽ viền merge từ các cạnh ngoài của cell con; nếu chỉ style anchor
-// thì viền phải/dưới bị mất → phải style mọi cell trước khi merge.
-function styleRange(ws, styleCell, r1, c1, r2, c2, opts, value) {
-  for (let r = r1; r <= r2; r++) {
-    for (let c = c1; c <= c2; c++) styleCell(ws.getCell(r, c), opts);
-  }
-  if (value !== undefined) ws.getCell(r1, c1).value = value;
-  if (r1 !== r2 || c1 !== c2) ws.mergeCells(r1, c1, r2, c2);
-}
-
-// --- Build 1 sheet testcase (GUI hoặc Logic) --------------------------------
-function buildTcSheet(ws, opts) {
-  const { funcName, testType, sections, devices, subCols, colWidths, meta, styleCell } = opts;
-  const NCOL = 6 + devices.length * subCols.length + 2; // +2 cho Memo, Status
-
-  let total = 0; sections.forEach(s => total += s.rows.length);
-  const DATA_START = 11;
-  const DATA_END = DATA_START + total + sections.length + 10;
-  const firstCols = devices.map((_, di) => colLetter(7 + di * subCols.length));
-  const lastCols = devices.map((_, di) => colLetter(7 + di * subCols.length + 2));
-  const countMark = (cols, mark) => ({ formula: cols.map(c => `COUNTIF($${c}$${DATA_START}:$${c}$${DATA_END},"${mark}")`).join('+') });
-  const totalF = () => ({ formula: `COUNTIF($D$${DATA_START}:$D$${DATA_END},"${testType}")` });
-
-  // Info block trái (A:D label / E value) + summary phải (F label / G First / H Last)
-  const leftLabels = ['Function name', 'Creator', 'Create Date', 'Tester', 'Fist time test date', 'Final time test date'];
-  const leftValues = [funcName, meta.creator, meta.createDate, '', '', ''];
-  const rightLabels = ['', 'Total test case', 'OK', 'NG', 'Pending', 'Skip'];
-  const marks = [null, null, 'OK', 'NG', '△', '-'];
-  for (let r = 1; r <= 6; r++) {
-    styleRange(ws, styleCell, r, 1, r, 4, { fillArgb: GRAY }, leftLabels[r - 1]);
-    styleRange(ws, styleCell, r, 5, r, 5, { fillArgb: WHITE }, leftValues[r - 1]);
-    if (r === 1) {
-      styleRange(ws, styleCell, 1, 6, 1, 6, { fillArgb: GRAY }, '');
-      styleRange(ws, styleCell, 1, 7, 1, 7, { fillArgb: GRAY2, center: true, bold: true }, 'First');
-      styleRange(ws, styleCell, 1, 8, 1, 8, { fillArgb: GRAY2, center: true, bold: true }, 'Last');
-    } else {
-      styleRange(ws, styleCell, r, 6, r, 6, { fillArgb: GRAY }, rightLabels[r - 1]);
-      const firstVal = (r === 2) ? totalF() : countMark(firstCols, marks[r - 1]);
-      const lastVal = (r === 2) ? totalF() : countMark(lastCols, marks[r - 1]);
-      styleRange(ws, styleCell, r, 7, r, 7, { fillArgb: WHITE, center: true }, firstVal);
-      styleRange(ws, styleCell, r, 8, r, 8, { fillArgb: WHITE, center: true }, lastVal);
-    }
+  // Column widths + styles
+  if (src.columns) {
+    src.columns.forEach((col, idx) => {
+      if (!col) return;
+      const nc = dest.getColumn(idx + 1);
+      if (col.width != null) nc.width = col.width;
+      if (col.hidden) nc.hidden = col.hidden;
+      if (col.style) nc.style = JSON.parse(JSON.stringify(col.style));
+    });
   }
 
-  // Row 7: banner Test Result — tách MỖI device 1 banner (bám mẫu Push)
-  devices.forEach((_, di) => {
-    const base = 7 + di * subCols.length;
-    styleRange(ws, styleCell, 7, base, 7, base + subCols.length - 1, { fillArgb: GRAY, center: true, bold: true }, 'Test Result(テスト結果)');
-  });
-  // Memo & Status headers (merge dọc rows 7-9)
-  styleRange(ws, styleCell, 7, NCOL - 1, 9, NCOL - 1, { fillArgb: GRAY, center: true, bold: true }, 'Memo');
-  styleRange(ws, styleCell, 7, NCOL, 9, NCOL, { fillArgb: GRAY, center: true, bold: true }, 'Status');
-
-  // Row 8-9: header cố định
-  const fixedHdr = ['No', 'Test Object', 'Sub Test Object', 'Test Type', 'Input(Condition)', 'Output(Expect result)'];
-  fixedHdr.forEach((h, i) => { styleRange(ws, styleCell, 8, i + 1, 9, i + 1, { fillArgb: GRAY, center: true, bold: true }, h); });
-  devices.forEach((d, di) => {
-    const base = 7 + di * subCols.length;
-    styleRange(ws, styleCell, 8, base, 8, base + subCols.length - 1, { fillArgb: GRAY, center: true, bold: true }, d);
-    subCols.forEach((sc, k) => { styleRange(ws, styleCell, 9, base + k, 9, base + k, { fillArgb: GRAY, center: true }, sc); });
-  });
-
-  // Data: section title + rows, merge Test Object trùng trong cùng cụm
-  let no = 1; let r = 10;
-  sections.forEach(sec => {
-    styleRange(ws, styleCell, r, 1, r, NCOL, { role: 'section', bold: true }, sec.title);
-    r++;
-    let i = 0;
-    while (i < sec.rows.length) {
-      const startR = r; const to = sec.rows[i].to; let j = i;
-      while (j < sec.rows.length && sec.rows[j].to === to) {
-        const row = sec.rows[j];
-        for (let c = 1; c <= NCOL; c++) {
-          if (c >= 7 && c <= NCOL - 2) styleCell(ws.getCell(r, c), { role: 'result' });
-          else if (c > NCOL - 2) styleCell(ws.getCell(r, c), { role: 'memo' });
-          else styleCell(ws.getCell(r, c), { fillArgb: WHITE, center: (c === 1 || c === 4) });
-        }
-        ws.getCell(r, 1).value = no++;
-        ws.getCell(r, 2).value = (j === i) ? to : '';
-        ws.getCell(r, 3).value = row.sub;
-        ws.getCell(r, 4).value = testType;
-        ws.getCell(r, 5).value = row.input;
-        ws.getCell(r, 6).value = row.output;
-        r++; j++;
+  // Rows + cells (values + styles + formulas)
+  src.eachRow({ includeEmpty: true }, (row, rowNum) => {
+    const nr = dest.getRow(rowNum);
+    if (row.height != null) nr.height = row.height;
+    row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+      const nc = nr.getCell(colNum);
+      if (cell.formula) {
+        nc.value = { formula: cell.formula, result: cell.result };
+      } else if (cell.value !== null && cell.value !== undefined) {
+        nc.value = cell.value;
       }
-      if (j - i > 1) ws.mergeCells(startR, 2, r - 1, 2);
+      if (cell.style) nc.style = JSON.parse(JSON.stringify(cell.style));
+    });
+  });
+
+  // Merges (src.model.merges là mảng string vd ["A10:R10","A11:A12"])
+  if (src.model && Array.isArray(src.model.merges)) {
+    src.model.merges.forEach((m) => {
+      try { dest.mergeCells(m); } catch (_) { /* ignore overlap */ }
+    });
+  }
+  return dest;
+}
+
+// Capture style của các cell trong 1 row (cols 1..NCOL) — dùng làm anchor để fill
+function captureRowStyles(ws, rowNum, ncol) {
+  const styles = [];
+  const row = ws.getRow(rowNum);
+  for (let c = 1; c <= ncol; c++) {
+    const cell = row.getCell(c);
+    styles.push(cell.style ? JSON.parse(JSON.stringify(cell.style)) : {});
+  }
+  return styles;
+}
+
+// Clear toàn bộ row >= startRow (unmerge các vùng merge bị ảnh hưởng + splice rows)
+function clearFromRow(ws, startRow) {
+  // Unmerge mọi vùng có start row >= startRow
+  if (ws.model && Array.isArray(ws.model.merges)) {
+    const toRemove = ws.model.merges.slice().filter((m) => {
+      const match = String(m).match(/^[A-Z]+(\d+):[A-Z]+\d+$/);
+      return match && parseInt(match[1], 10) >= startRow;
+    });
+    toRemove.forEach((m) => {
+      try { ws.unMergeCells(m); } catch (_) { /* ignore */ }
+    });
+  }
+  const lastRow = ws.actualRowCount;
+  if (lastRow >= startRow) {
+    ws.spliceRows(startRow, lastRow - startRow + 1);
+  }
+}
+
+// Apply 1 mảng style (đã capture) lên row rowNum
+function applyRowStyle(ws, rowNum, styles) {
+  const row = ws.getRow(rowNum);
+  for (let c = 0; c < styles.length; c++) {
+    row.getCell(c + 1).style = JSON.parse(JSON.stringify(styles[c]));
+  }
+}
+
+// =============================================================================
+// Fill logic
+// =============================================================================
+
+function updateSheetMetadata(ws, meta, devices) {
+  ws.getCell('E1').value = meta.functionName;
+  ws.getCell('E2').value = meta.creator;
+  ws.getCell('E3').value = meta.createDate;
+  // Device names (G8 = device1, L8 = device2) — chỉ override nếu cell tồn tại trong template
+  if (devices[0]) ws.getCell('G8').value = devices[0];
+  if (devices[1]) ws.getCell('L8').value = devices[1];
+}
+
+function fillSheet(ws, sections, testType, anchors) {
+  const { sectionStyles, dataStyles, sectionRow, ncol } = anchors;
+
+  // Clear template data rows từ row 10 trở đi
+  clearFromRow(ws, sectionRow);
+
+  let r = sectionRow;
+  let no = 1;
+  let total = 0;
+  let firstDataRow = null;
+  let lastDataRow = null;
+
+  for (const section of sections) {
+    // --- Section title row ---
+    applyRowStyle(ws, r, sectionStyles);
+    ws.getCell(r, 1).value = section.title;
+    try { ws.mergeCells(r, 1, r, ncol); } catch (_) { /* ignore */ }
+    r++;
+
+    // --- Data rows (group consecutive same `to` để merge col B) ---
+    let i = 0;
+    while (i < section.rows.length) {
+      const startR = r;
+      const currentTo = section.rows[i].to;
+      let j = i;
+      while (j < section.rows.length && section.rows[j].to === currentTo) {
+        const rowData = section.rows[j];
+        applyRowStyle(ws, r, dataStyles);
+        // Col A: số thứ tự trực tiếp (plain number, không dùng formula để tránh exceljs quirks)
+        ws.getCell(r, 1).value = no++;
+        ws.getCell(r, 2).value = (j === i) ? currentTo : '';
+        ws.getCell(r, 3).value = rowData.sub || '';
+        ws.getCell(r, 4).value = testType;
+        ws.getCell(r, 5).value = rowData.input || '';
+        ws.getCell(r, 6).value = rowData.output || '';
+        if (firstDataRow === null) firstDataRow = r;
+        lastDataRow = r;
+        r++; j++;
+        total++;
+      }
+      if (j - i > 1) {
+        try { ws.mergeCells(startR, 2, r - 1, 2); } catch (_) { /* */ }
+      }
       i = j;
     }
-  });
+  }
 
-  // Column widths
-  ws.columns.forEach((col, idx) => {
-    if (idx === 0) col.width = colWidths.no;
-    else if (idx === 1) col.width = colWidths.testObject;
-    else if (idx === 2) col.width = colWidths.subTestObject;
-    else if (idx === 3) col.width = colWidths.testType;
-    else if (idx === 4) col.width = colWidths.input;
-    else if (idx === 5) col.width = colWidths.output;
-    else if (idx === NCOL - 2) col.width = colWidths.memo;
-    else if (idx === NCOL - 1) col.width = colWidths.status;
-    else col.width = colWidths.result;
-  });
-  ws.views = [{ state: 'frozen', xSplit: 0, ySplit: 9 }];
+  // Apply data validations + date format cho TOÀN BỘ data rows
+  if (firstDataRow !== null && lastDataRow !== null) {
+    applyDataValidations(ws, firstDataRow, lastDataRow);
+  }
   return total;
 }
 
-// --- Build sheet Summary (bám layout mẫu Push: lề cột A, label B:F, value G:N) ---
-function buildSummary(ws, opts) {
-  const { meta, devices, sheetMeta, styleCell } = opts;
-  const LBL_C1 = 2, LBL_C2 = 6;   // label  B:F
-  const VAL_C1 = 7, VAL_C2 = 14;  // value  G:N
-  const NUM_C1 = 7;               // cột số đầu tiên (Detail)
+// Apply data validations (dropdowns) + date number format cho data rows.
+//   - Result columns G/I/L/N: dropdown "OK,NG,-,△"
+//   - Test Type col D: dropdown "GUI,LOGIC" (đã fill vào nhưng vẫn cho dropdown để user sửa dễ)
+//   - Status col R: dropdown "Add New,Update,Delete,Reuse,Pending"
+//   - Date columns H/J/M/O: validation type=date + numFmt 'yyyy/mm/dd'
+//
+// Lưu ý: Excel desktop KHÔNG có native date picker per cell.
+// Validation type=date chỉ validate input, không hiện picker.
+// Khuyến nghị: Ctrl+; để chèn today's date, hoặc cài Office Add-in
+// 'Mini Calendar and Date Picker' (Insert > Get Add-ins).
+function applyDataValidations(ws, firstRow, lastRow) {
+  const colLetter = (n) => {
+    let s = '';
+    while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+    return s;
+  };
+  const range = (col) => `${colLetter(col)}${firstRow}:${colLetter(col)}${lastRow}`;
 
-  // ■ Common information ------------------------------------------------------
-  ws.getCell('A1').value = '■ Common information';
-  ws.getCell('A1').font = { ...FONT, bold: true };
-  const common = [
-    ['Function name / Screen name', meta.functionName],
-    ['Update PIC', meta.creator],
-    ['Create duration', meta.createDate],
-    ['Reviewer', ''],
-    ['Execute PIC', ''],
-    ['Test execute duration', ''],
-    ['Test device', devices.join(', ')],
-    ['OS type / Browser name', '-'],
-    ['OS / browser version', '-'],
-    ['Team', meta.team],
-  ];
-  let r = 2;
-  common.forEach(([k, v]) => {
-    styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: GRAY }, k);
-    styleRange(ws, styleCell, r, VAL_C1, r, VAL_C2, { fillArgb: WHITE }, v);
-    r++;
-  });
-  r++; // dòng trống
+  const RESULT_COLS = [7, 9, 12, 14];   // G, I, L, N
+  const DATE_COLS = [8, 10, 13, 15];     // H, J, M, O
+  const TYPE_COL = 4;                    // D
+  const STATUS_COL = 18;                 // R
 
-  // Tính trước vị trí Detail để Total SUM tham chiếu (forward ref hợp lệ trong Excel)
-  const nTotalItems = 4; // Total test case, OK, NG, Pending
-  const rTotalHdr = r;                       // ■ Total summary
-  const rTotalFirst = rTotalHdr + 1;         // dòng item đầu
-  const rDetailHdr = rTotalFirst + nTotalItems + 1; // ■ Detail summary (cách 1 dòng trống)
-  const rDetailTableHdr = rDetailHdr + 1;
-  const detailStart = rDetailTableHdr + 1;
-  const detailEnd = detailStart + sheetMeta.length - 1;
+  // 1. Result dropdowns
+  for (const c of RESULT_COLS) {
+    ws.dataValidations.add(range(c), {
+      type: 'list',
+      allowBlank: true,
+      showErrorMessage: true,
+      formulae: ['"OK,NG,-,△"'],
+    });
+  }
 
-  // ■ Total summary -----------------------------------------------------------
-  ws.getCell(rTotalHdr, 1).value = '■ Total summary';
-  ws.getCell(rTotalHdr, 1).font = { ...FONT, bold: true };
-  const colL = (n) => colLetter(n);
-  const totItems = [
-    ['Total test case', NUM_C1],     // G của Detail
-    ['OK', NUM_C1 + 1],              // H
-    ['NG', NUM_C1 + 2],              // I
-    ['Pending', NUM_C1 + 3],         // J
-  ];
-  r = rTotalFirst;
-  totItems.forEach(([k, cIdx]) => {
-    styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: GRAY }, k);
-    styleRange(ws, styleCell, r, VAL_C1, r, VAL_C2, { fillArgb: WHITE, center: true },
-      { formula: `SUM(${colL(cIdx)}${detailStart}:${colL(cIdx)}${detailEnd})` });
-    r++;
+  // 2. Test Type dropdown
+  ws.dataValidations.add(range(TYPE_COL), {
+    type: 'list',
+    allowBlank: true,
+    formulae: ['"GUI,LOGIC"'],
   });
 
-  // ■ Detail summary ----------------------------------------------------------
-  ws.getCell(rDetailHdr, 1).value = '■ Detail summary';
-  ws.getCell(rDetailHdr, 1).font = { ...FONT, bold: true };
-  // header: Sheet name / Function name (B:F) | Total | OK | NG | Pending | Tester
-  styleRange(ws, styleCell, rDetailTableHdr, LBL_C1, rDetailTableHdr, LBL_C2, { fillArgb: GRAY, center: true, bold: true }, 'Sheet name / Function name');
-  ['Total', 'OK', 'NG', 'Pending', 'Tester'].forEach((h, i) =>
-    styleRange(ws, styleCell, rDetailTableHdr, NUM_C1 + i, rDetailTableHdr, NUM_C1 + i, { fillArgb: GRAY, center: true, bold: true }, h));
-  r = detailStart;
-  sheetMeta.forEach(m => {
-    styleRange(ws, styleCell, r, LBL_C1, r, LBL_C2, { fillArgb: WHITE }, `${m.sheet} (${m.func})`);
-    const nums = [
-      { formula: `'${m.sheet}'!G2` },
-      { formula: `'${m.sheet}'!G3` },
-      { formula: `'${m.sheet}'!G4` },
-      { formula: `'${m.sheet}'!G5` },
-      meta.creator,
-    ];
-    nums.forEach((v, i) => styleRange(ws, styleCell, r, NUM_C1 + i, r, NUM_C1 + i, { fillArgb: WHITE, center: (i <= 3) }, v));
-    r++;
+  // 3. Status dropdown
+  ws.dataValidations.add(range(STATUS_COL), {
+    type: 'list',
+    allowBlank: true,
+    showErrorMessage: true,
+    formulae: ['"Add New,Update,Delete,Reuse,Pending"'],
   });
 
-  // Cột: A lề mỏng, B:F label, G:N value
-  ws.getColumn(1).width = 3;
-  [2, 3, 4, 5, 6].forEach(c => ws.getColumn(c).width = 14);
-  [7, 8, 9, 10, 11, 12, 13, 14].forEach(c => ws.getColumn(c).width = 11);
+  // 4. Date columns: numFmt + date validation (soft — chỉ format hiển thị)
+  // LƯU Ý: Excel desktop KHÔNG có native date picker per cell.
+  // Recommend: cài Office Add-in "Mini Calendar and Date Picker" (Insert > Get Add-ins),
+  // hoặc dùng phím tắt Ctrl+; để chèn ngày hôm nay.
+  for (const c of DATE_COLS) {
+    for (let row = firstRow; row <= lastRow; row++) {
+      const cell = ws.getCell(row, c);
+      cell.numFmt = 'yyyy/mm/dd';
+    }
+    // Dùng Date object (exceljs serialize đúng), không dùng string formula
+    ws.dataValidations.add(range(c), {
+      type: 'date',
+      operator: 'greaterThanOrEqual',
+      allowBlank: true,
+      showErrorMessage: true,
+      errorTitle: 'Sai định dạng',
+      error: 'Vui lòng nhập ngày hợp lệ (Ctrl+; để chèn today)',
+      formulae: [new Date(2000, 0, 1)],
+    });
+  }
 }
+
+// Cập nhật Summary: common info (rows 2-11) + detail rows (28+) trỏ tới sheet mới
+// LƯU Ý: HÀM NÀY PHẢI CHẠY TRƯỚC KHI REMOVE CÁC TEMPLATE EXTRA SHEETS,
+// nếu không exceljs sẽ tự rewrite mọi formula ref tới sheet đã xoá thành #REF!,
+// làm hỏng cả Total summary (rows 15-23) vì chúng ref cột V/W/AB của detail rows.
+function updateSummary(ws, meta, devices, sheets) {
+  // Common information (giữ template merges, chỉ thay value)
+  ws.getCell('G2').value = meta.functionName;
+  ws.getCell('G3').value = meta.creator;
+  ws.getCell('G4').value = meta.createDate;
+  ws.getCell('G8').value = devices.join(', ');
+  ws.getCell('G11').value = meta.team || 'Zapp';
+
+  // Capture style row 28 (template's first detail row) làm anchor TRƯỚC khi splice
+  const detailStyles = captureRowStyles(ws, 28, 32); // cột A..AF (32 cols)
+
+  // Sửa bổ sung các #REF! cố hữu trong template Total summary
+  // (template gốc có I22=IF(I17=0,"-",#REF!/I17) — dọn luôn)
+  const cellI22 = ws.getCell('I22');
+  if (cellI22.formula && /#REF!/.test(cellI22.formula)) {
+    cellI22.value = { formula: `IF(I17=0,"-",I18/I17)`, result: 0 };
+  }
+
+  // Unmerge merges trong row 28+ (Detail summary data rows)
+  if (ws.model && Array.isArray(ws.model.merges)) {
+    ws.model.merges.slice().forEach((m) => {
+      const match = String(m).match(/^[A-Z]+(\d+):[A-Z]+\d+$/);
+      if (match && parseInt(match[1], 10) >= 28) {
+        try { ws.unMergeCells(m); } catch (_) { /* */ }
+      }
+    });
+  }
+
+  // Tìm row cuối hiện có trong Detail summary để biên độ clear/restyle
+  let lastDetailRow = 28;
+  ws.eachRow({ includeEmpty: false }, (_row, num) => {
+    if (num > lastDetailRow) lastDetailRow = num;
+  });
+  // Bảo đảm có ít nhất bằng số sheets cần fill
+  if (lastDetailRow < 27 + sheets.length) lastDetailRow = 27 + sheets.length;
+
+  // Xóa TRIỆT ĐỂ value từ row 28 đến lastDetailRow (spliceRows của exceljs broken)
+  for (let num = 28; num <= lastDetailRow; num++) {
+    const row = ws.getRow(num);
+    row.eachCell({ includeEmpty: false }, (cell) => {
+      cell.value = null;
+    });
+  }
+
+  // Re-apply UNIFORM detailStyles (row 28 anchor) cho TẤT CẢ rows 28..lastDetailRow
+  // để border đồng đều, không bị "lỗi thiếu border" do template gốc styling không đều.
+  for (let num = 28; num <= lastDetailRow; num++) {
+    for (let c = 0; c < detailStyles.length; c++) {
+      ws.getRow(num).getCell(c + 1).style = JSON.parse(JSON.stringify(detailStyles[c]));
+    }
+    // Apply merges B:F + G:K + L:S (Function name span) cho mọi row để border liền mạch
+    try { ws.mergeCells(num, 2, num, 6); } catch (_) { /* */ }
+    try { ws.mergeCells(num, 7, num, 11); } catch (_) { /* */ }
+    try { ws.mergeCells(num, 12, num, 19); } catch (_) { /* */ }
+  }
+
+  // Fill 2 detail rows mới cho <prefix>_GUI và <prefix>_LOGIC
+  let r = 28;
+  for (const s of sheets) {
+    // B = Sheet name, G = Function/screen, T = Created Tester, U/AA = First/Last Tester
+    ws.getCell(r, 2).value = s.sheet;
+    ws.getCell(r, 7).value = s.func;
+    ws.getCell(r, 20).value = meta.creator;    // T = Created (Tester)
+    ws.getCell(r, 21).value = meta.creator;    // U = First time Tester
+    ws.getCell(r, 27).value = meta.creator;    // AA = Last time Tester
+    // V/W/X/Y/Z = Total/OK/NG/N-A/Pending (First device)
+    ws.getCell(r, 22).value = { formula: `'${s.sheet}'!G2`, result: 0 };
+    ws.getCell(r, 23).value = { formula: `'${s.sheet}'!G3`, result: 0 };
+    ws.getCell(r, 24).value = { formula: `'${s.sheet}'!G4`, result: 0 };
+    ws.getCell(r, 25).value = { formula: `'${s.sheet}'!G6`, result: 0 };
+    ws.getCell(r, 26).value = { formula: `'${s.sheet}'!G5`, result: 0 };
+    // AB/AC/AD/AE/AF = Total/OK/NG/N-A/Pending (Last device)
+    ws.getCell(r, 28).value = { formula: `'${s.sheet}'!H2`, result: 0 };
+    ws.getCell(r, 29).value = { formula: `'${s.sheet}'!H3`, result: 0 };
+    ws.getCell(r, 30).value = { formula: `'${s.sheet}'!H4`, result: 0 };
+    ws.getCell(r, 31).value = { formula: `'${s.sheet}'!H6`, result: 0 };
+    ws.getCell(r, 32).value = { formula: `'${s.sheet}'!H5`, result: 0 };
+    r++;
+  }
+}
+
+// =============================================================================
+// Public API
+// =============================================================================
 
 /**
  * Sinh 1 file testcase Excel chuẩn (Summary + <prefix>_GUI + <prefix>_LOGIC).
+ * Copy template canonical rồi fill data mới — giữ NGUYÊN màu/border/font/formula.
+ *
  * @param {Object} config
  * @param {string} config.functionName  Tên function/feature (vd 'Popup Claim')
  * @param {string} config.creator       Người tạo
@@ -260,54 +359,74 @@ function buildSummary(ws, opts) {
  * @param {string} [config.team]        Team (default 'Zapp')
  * @param {string[]} [config.devices]   Danh sách device (default ['iOS','Android'])
  * @param {string} config.sheetPrefix   Tiền tố sheet (vd 'Popup_Claim' -> Popup_Claim_GUI/LOGIC)
- * @param {Object} config.guiSection    1 section GUI { title, rows:[{to,sub,input,output}] }
- *                 hoặc config.guiSections [section,...]
+ * @param {Object} [config.guiSection]  1 section GUI {title, rows:[{to,sub,input,output}]}
+ * @param {Object[]} [config.guiSections] Hoặc nhiều section GUI
  * @param {Object[]} config.logicSections Mảng section Logic
  * @param {string} config.output        Đường dẫn file .xlsx output
- * @param {string} [config.template]    File mẫu để clone style (default Push)
+ * @param {string} [config.template]    File mẫu để clone (default canonical app template)
  * @returns {Promise<{gui:number, logic:number, output:string}>}
  */
 async function generateTestcase(config) {
   const cfg = { ...DEFAULTS, ...config };
   const devices = cfg.devices;
-  const subCols = cfg.subCols;
-  const colWidths = { ...DEFAULTS.colWidths, ...(cfg.colWidths || {}) };
   const guiSections = cfg.guiSections || (cfg.guiSection ? [cfg.guiSection] : []);
   const logicSections = cfg.logicSections || [];
   if (!cfg.output) throw new Error('generateTestcase: thiếu config.output');
   if (!cfg.sheetPrefix) throw new Error('generateTestcase: thiếu config.sheetPrefix');
+  if (!guiSections.length) throw new Error('generateTestcase: thiếu guiSection/guiSections');
+  if (!logicSections.length) throw new Error('generateTestcase: thiếu logicSections');
 
-  // Clone style từ mẫu
-  const tplWb = new ExcelJS.Workbook();
-  await tplWb.xlsx.readFile(cfg.template);
-  const S = captureStyles(tplWb.getWorksheet(cfg.templateSheet));
-  const styleCell = makeStyleCell(S);
+  // 1. Load template
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.readFile(cfg.template);
 
+  const tplGui = wb.getWorksheet(cfg.templateGuiSheet);
+  if (!tplGui) throw new Error(`Template sheet "${cfg.templateGuiSheet}" not found in ${cfg.template}`);
+
+  // 2. Capture anchor styles từ template Home_GUI (TRƯỚC mọi modification)
+  const sectionStyles = captureRowStyles(tplGui, cfg.SECTION_ROW, cfg.NCOL);
+  const dataStyles = captureRowStyles(tplGui, cfg.DATA_ROW, cfg.NCOL);
+  const anchors = {
+    sectionStyles, dataStyles,
+    sectionRow: cfg.SECTION_ROW, ncol: cfg.NCOL,
+  };
+
+  // 3. Clone Home_GUI thành 2 sheet mới
+  const guiName = `${cfg.sheetPrefix}_GUI`;
+  const logicName = `${cfg.sheetPrefix}_LOGIC`;
+  const guiWs = cloneSheet(wb, cfg.templateGuiSheet, guiName);
+  const logicWs = cloneSheet(wb, cfg.templateGuiSheet, logicName);
+
+  // 4. Fill metadata + data (TRƯỚC khi remove template sheets)
   const meta = {
     functionName: cfg.functionName,
     creator: cfg.creator,
     createDate: cfg.createDate,
     release: cfg.release,
-    team: cfg.team,
+    team: cfg.team || DEFAULTS.team,
   };
+  updateSheetMetadata(guiWs, meta, devices);
+  const guiTotal = fillSheet(guiWs, guiSections, 'GUI', anchors);
+  updateSheetMetadata(logicWs, meta, devices);
+  const logicTotal = fillSheet(logicWs, logicSections, 'Logic', anchors);
 
-  const wb = new ExcelJS.Workbook();
-  const wsSum = wb.addWorksheet('Summary');
-  const guiName = `${cfg.sheetPrefix}_GUI`;
-  const logicName = `${cfg.sheetPrefix}_LOGIC`;
-  const wsGui = wb.addWorksheet(guiName);
-  const wsLogic = wb.addWorksheet(logicName);
+  // 5. Summary: update common info + detail rows (TRƯỚC khi remove template sheets,
+  //    nếu không exceljs sẽ auto-rewrite mọi formula ref → #REF! làm hỏng Total summary)
+  const wsSummary = wb.getWorksheet(cfg.templateSummarySheet);
+  if (wsSummary) {
+    updateSummary(wsSummary, meta, devices, [
+      { sheet: guiName, func: `${cfg.functionName} - GUI` },
+      { sheet: logicName, func: `${cfg.functionName} - Logic` },
+    ]);
+  }
 
-  const guiTotal = buildTcSheet(wsGui, { funcName: cfg.functionName, testType: 'GUI', sections: guiSections, devices, subCols, colWidths, meta, styleCell });
-  const logicTotal = buildTcSheet(wsLogic, { funcName: cfg.functionName, testType: 'Logic', sections: logicSections, devices, subCols, colWidths, meta, styleCell });
-  buildSummary(wsSum, {
-    meta, devices, styleCell,
-    sheetMeta: [
-      { sheet: guiName, func: `${cfg.functionName} - GUI`, total: guiTotal },
-      { sheet: logicName, func: `${cfg.functionName} - Logic`, total: logicTotal },
-    ],
+  // 6. Remove template's extra sheets (kể cả Home_GUI gốc) — SAU cùng
+  cfg.templateExtraSheets.forEach((name) => {
+    const ws = wb.getWorksheet(name);
+    if (ws) wb.removeWorksheet(ws.id);
   });
 
+  // 7. Save
   await wb.xlsx.writeFile(cfg.output);
   return { gui: guiTotal, logic: logicTotal, output: cfg.output };
 }
