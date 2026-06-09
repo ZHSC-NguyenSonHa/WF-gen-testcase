@@ -61,15 +61,16 @@ Gõ `/` trong Copilot Chat để xem danh sách. Nhóm chính:
 
 | Command | Mục đích |
 |---|---|
-| `/generate_requirements_from_website` | Sinh requirements từ website |
+| `/analyze_requirement_document` | Phân tích requirement (spec/.doc) |
 | `/generate_manual_testcases_rbt` | Sinh manual TC theo AI-RBT 6 bước (FULL) |
-| `/generate_testcases_from_requirements` | Sinh TC nhanh (QUICK mode) |
 | `/generate_automation_from_testcases` | Manual TC → automation script |
+| `/generate_automation_framework` | Thiết kế automation framework |
 | `/generate_locator` | Sinh locator ổn định |
 | `/generate_test_data` | Sinh test data unique + traceable |
+| `/generate_cross_module_test_plan` | Cross-module test matrix |
+| `/generate_combinatorial_test_data` | Combinatorial data |
+| `/generate_api_tests_from_swagger` | API tests từ Swagger |
 | `/analyze_flaky_tests` | Phân tích flaky tests |
-| `/fetch_jira_requirements` | Lấy requirements từ Jira |
-| `/import_test_results_xray` | Đẩy results lên Xray |
 
 ### Workflow đa-bước (`workflow_manual/`, `workflow_automation/`)
 

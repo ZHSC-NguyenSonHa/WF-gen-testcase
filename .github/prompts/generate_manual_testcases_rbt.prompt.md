@@ -4,8 +4,7 @@ agent: agent
 tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt-manual-testing`** (tại `.github/skills/rbt-manual-testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements-analyzer`** để hiểu cách phân tích giao diện nếu cần.
-
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt-manual-testing`** (tại `.github/skills/rbt-manual-testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements-analyzer`** để hiểu cách phân tích giao diện nếu cần. Kết quả test case phải nạp và đọc kỹ và làm theo nội dung của skill `skill-format-testcase` để đảm bảo format chuẩn.
 # Workflow: Sinh Manual Test Cases theo AI-RBT Framework (FULL RBT Mode)
 
 Workflow này sử dụng **Mode FULL RBT** của skill `rbt-manual-testing` — quy trình **AI-RBT (AI-Driven Risk-Based Testing)** gồm 6 bước tuần tự để sinh manual test cases từ tài liệu yêu cầu.

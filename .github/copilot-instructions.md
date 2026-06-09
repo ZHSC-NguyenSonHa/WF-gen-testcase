@@ -104,7 +104,6 @@ Khi tạo/sửa `.prompt.md`, `.instructions.md`, `SKILL.md`:
 | `flaky-test-analyzer` | Phân tích & fix flaky tests |
 | `framework-architect` | Thiết kế automation framework |
 | `excel-converter` | Markdown TC → `.xlsx` |
-| `jira-integration` | Jira/Xray — fetch requirements, push results |
 | `google-sheet-integration` | Đọc/ghi Google Sheets |
 
 ### Slash Commands
@@ -113,13 +112,9 @@ Khi tạo/sửa `.prompt.md`, `.instructions.md`, `SKILL.md`:
 
 | Command | Mô tả |
 |---|---|
-| `/generate_requirements_from_website` | Sinh requirements từ website |
-| `/analyze_requirement_document` | Phân tích requirement (Jira/.doc) |
+| `/analyze_requirement_document` | Phân tích requirement (spec/.doc) |
 | `/generate_manual_testcases_rbt` | Manual TC theo AI-RBT 6 bước (FULL) |
-| `/generate_testcases_from_requirements` | TC nhanh (QUICK) |
 | `/generate_automation_from_testcases` | Manual TC → automation |
-| `/generate_automation_from_ui_flow` | UI flow → automation |
-| `/generate_application_test_plan` | Khám phá app, sinh test plan |
 | `/generate_automation_framework` | Thiết kế framework |
 | `/generate_locator` | Sinh locator |
 | `/generate_test_data` | Sinh test data |
@@ -127,8 +122,6 @@ Khi tạo/sửa `.prompt.md`, `.instructions.md`, `SKILL.md`:
 | `/generate_combinatorial_test_data` | Combinatorial data |
 | `/generate_api_tests_from_swagger` | API tests từ Swagger |
 | `/analyze_flaky_tests` | Phân tích flaky |
-| `/fetch_jira_requirements` | Lấy requirements từ Jira |
-| `/import_test_results_xray` | Đẩy results lên Xray |
 
 **`.github/workflow_manual/` + `.github/workflow_automation/`** — multi-step (gõ `/manual-` hoặc `/automation-`):
 

@@ -1,6 +1,6 @@
 # Integration Scripts
 
-Scripts Node.js dùng bởi skill `jira-integration` và `google-sheet-integration`.
+Scripts Node.js dùng bởi skill `google-sheet-integration`.
 
 ## Cấu trúc
 
@@ -32,9 +32,9 @@ npm install
 
 ## Slash commands liên quan
 
-- `/fetch_jira_requirements` — Lấy requirements từ Jira
-- `/import_test_results_xray` — Đẩy results lên Xray
 - (Google Sheets: chạy trực tiếp các script)
+
+> Lưu ý: các prompt `/fetch_jira_requirements` và `/import_test_results_xray` đã được gỡ khỏi repo (hệ thống dùng Backlog, không dùng Jira/Xray). Các script tích hợp bên dưới vẫn giữ để tham khảo.
 
 ## Bảo mật
 

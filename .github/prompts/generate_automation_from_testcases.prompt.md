@@ -23,14 +23,6 @@ Workflow này giúp agent đọc file manual test cases do user cung cấp, tự
 - ⚠️ **Rule E3 (CRITICAL):** Khi test FAIL → tự đọc log → phân tích → sửa code → chạy lại. **CẤM hỏi user trong quá trình fix lỗi.** Chỉ hỏi khi gặp business rule mâu thuẫn hoặc hết 5 vòng auto-heal
 - **Artifact `task.md`** — PHẢI tạo để theo dõi tiến độ 6 bước
 
-## Workflow này khác gì `generate_automation_from_ui_flow`?
-
-| | `from_testcases` (workflow này) | `from_ui_flow` |
-|---|---|---|
-| **Input** | File manual test cases có cấu trúc (MD/Excel/JSON) | Mô tả UI steps bằng lời hoặc chỉ URL |
-| **Đã có TC** | ✅ Có sẵn — đọc và convert | ❌ Chưa có — agent tự khám phá |
-| **Approach** | Đọc TC → inspect UI verify → sinh code | Chạy thật trên browser → thu thập → sinh code |
-
 ## Input cần thu thập
 
 | Input | Cách lấy | Độ ưu tiên |

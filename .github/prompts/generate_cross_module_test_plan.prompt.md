@@ -19,7 +19,7 @@ tools: ['codebase', 'editFiles', 'runCommands', 'fetch', 'search', 'usages']
 | Tình huống | Dùng? |
 |------------|-------|
 | Tính năng đi qua **1 module/form** | ❌ Dùng `/generate_manual_testcases_rbt` |
-| Tính năng đi qua **nhiều modules**, mỗi module **độc lập** | ⚠️ Dùng `/generate_application_test_plan` |
+| Tính năng đi qua **nhiều modules**, mỗi module **độc lập** | ⚠️ Dùng `/generate_manual_testcases_rbt` cho từng module |
 | Tính năng đi qua **nhiều modules NỐI TIẾP**, output phụ thuộc **bộ kết hợp điều kiện** | ✅ **Đúng workflow này** |
 | Cần **ma trận kết hợp** (Pairwise / Decision Table đa chiều) | ✅ **Đúng workflow này** |
 

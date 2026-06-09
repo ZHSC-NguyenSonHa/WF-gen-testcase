@@ -45,13 +45,11 @@ Typical prompts include:
 
 - Generate test cases from requirement
 - Generate Selenium automation from test case
-- Generate automation from UI steps
 - Generate API tests from Swagger
-- Generate regression suite → _(redirect sang `generate_application_test_plan` hoặc `generate_manual_testcases_rbt`)_
+- Generate regression suite → _(redirect sang `generate_manual_testcases_rbt`)_
 - Generate test data
 - Analyze flaky test
 - Generate locator for element
-- Generate requirements from website
 
 ---
 
@@ -63,7 +61,7 @@ When the user request matches a specific task, select the appropriate workflow f
 
 > **Delegate:** Tác vụ này thuộc skill **`rbt-manual-testing`** — không phải `qa-automation-engineer`.
 
-Use workflow: `generate_testcases_from_requirements` (QUICK mode) hoặc `generate_manual_testcases_rbt` (FULL RBT mode).
+Use workflow: `generate_manual_testcases_rbt` (FULL RBT mode)
 
 Triggers when user asks:
 
@@ -83,18 +81,6 @@ Triggers when user asks:
 - convert test case to automation
 - generate Selenium automation
 - generate Playwright automation from test case
-
----
-
-### Generate automation from UI steps
-
-Use workflow: `generate_automation_from_ui_flow`
-
-Triggers when user asks:
-
-- automate this UI flow
-- generate automation from steps
-- run UI steps and generate Selenium script
 
 ---
 
@@ -156,7 +142,7 @@ Triggers when user asks:
 
 ### Generate regression suite
 
-> **Không có workflow riêng.** Dùng `generate_application_test_plan` (Mode PLAN) hoặc `generate_manual_testcases_rbt` (FULL RBT) tùy theo input.
+> **Không có workflow riêng.** Dùng `generate_manual_testcases_rbt` (FULL RBT) tùy theo input.
 
 Triggers when user asks:
 
@@ -179,23 +165,6 @@ Triggers when user asks:
 - design Appium framework
 - scaffold automation project
 - thiết kế framework mới
-
----
-
-### Explore application and generate test plan
-
-Use workflow: `generate_application_test_plan`
-
-> Workflow này có **2 modes**: PLAN (mặc định — chỉ test plan) và FULL (test plan + automation skeleton).
-> Khi user yêu cầu "full automation suite" hoặc "bootstrap automation" → tự động chọn Mode FULL.
-
-Triggers when user asks:
-
-- explore application
-- discover test scenarios
-- generate test plan
-- generate full automation suite
-- bootstrap automation for project
 
 ---
 
@@ -222,18 +191,6 @@ Triggers when user asks:
 
 ---
 
-### Generate requirements from website
-
-Use workflow: `generate_requirements_from_website`
-
-Triggers when user asks:
-
-- generate requirements from website
-- analyze website module and create requirements
-- extract user stories from web page
-
----
-
 ### Analyze requirement document
 
 > **Delegate:** Tác vụ này sử dụng skill **`requirements-analyzer`** để phân tích requirement documents.
@@ -249,32 +206,6 @@ Triggers when user asks:
 - phân tích Jira ticket / requirement
 - tìm điểm mơ hồ trong requirement
 - analyze requirement / review requirement document
-
----
-
-### Fetch requirements from Jira
-
-Use workflow: `fetch_jira_requirements`
-
-Triggers when user asks:
-
-- fetch jira requirements
-- lấy requirement từ jira
-- get jira ticket
-- import user stories from jira
-
----
-
-### Import test results to Xray
-
-Use workflow: `import_test_results_xray`
-
-Triggers when user asks:
-
-- push test results to xray
-- đẩy kết quả test lên xray
-- import test execution to jira
-- upload playwright results to xray
 
 ---
 

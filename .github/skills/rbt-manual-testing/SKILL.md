@@ -48,7 +48,6 @@ Agent tự động chọn mode dựa trên **trigger keywords** và **ngữ cả
 ### → Mode QUICK
 
 Kích hoạt khi:
-- User dùng workflow `/generate_testcases_from_requirements`
 - User nói: "sinh test cases nhanh", "tạo TC từ requirement này", "viết test cases cho form..."
 - Requirements đã rõ ràng, scope nhỏ (1 module / 1 tính năng)
 - User không yêu cầu phân tích rủi ro hay quy trình bài bản

@@ -416,7 +416,7 @@ const SCENARIOS = {
       { actor:'error', title:'Gap được note vào risk log', body:'<code>RISK-01: Expired reset link chưa cover</code> sẽ xuất hiện trong báo cáo cuối.', log:['Risk-01 logged'], sets:{coverage:'95%', risks:'1'} },
       { actor:'system', title:'/manual-step-5-rbt-tcgen', body:'Sinh test cases chi tiết theo Risk-Based Testing với field-level validation.', addArtifact:{name:'05_testcases.md', icon:'🧪'}, log:['Sinh 42 test cases','Priority: 8 Critical, 18 High, 16 Medium'], sets:{step:'5/6', tc_count:'42'} },
       { actor:'system', title:'/manual-step-6-template-mapping', body:'Đưa TC vào template Markdown chuẩn, sẵn sàng import Excel/Jira.', addArtifact:{name:'06_final.md', icon:'📊'}, log:['Format Markdown','Sẵn sàng convert .xlsx'], sets:{step:'6/6', status:'DONE'} },
-      { actor:'success', title:'🎉 Hoàn tất!', body:'Bộ test cases đã sẵn sàng. Bạn có thể:<br>• Convert sang <code>.xlsx</code> qua skill <b>excel-converter</b><br>• Import lên Jira/Xray qua <b>/import_test_results_xray</b><br>• Hoặc chuyển sang automation qua <b>/automation-one-click</b>', log:['Workflow PASS','Total artifacts: 6'] },
+      { actor:'success', title:'🎉 Hoàn tất!', body:'Bộ test cases đã sẵn sàng. Bạn có thể:<br>• Convert sang <code>.xlsx</code> qua skill <b>excel-converter</b><br>• Hoặc chuyển sang automation qua <b>/automation-one-click</b>', log:['Workflow PASS','Total artifacts: 6'] },
     ]
   },
 
@@ -515,42 +515,6 @@ const SCENARIOS = {
   },
 
   // ============ REQUIREMENT & ANALYSIS ============
-  req_from_website: {
-    name: '/generate_requirements_from_website',
-    badge: 'Req', category: 'requirement',
-    desc: 'Crawl 1 module website → sinh tài liệu Requirements chuẩn',
-    steps: [
-      { actor:'user', title:'User cung cấp URL', body:'<i>"Phân tích trang /checkout của shop.example.com"</i>', log:['Start req gen'] },
-      { actor:'system', title:'Mở browser MCP, crawl module', body:'Inspect form, button, validation messages, error states.', log:['Crawl 8 pages','Detect 5 user flows'] },
-      { actor:'decision', title:'❓ Crawl được tới level nào?', body:'Trang có require login để xem checkout.',
-        branches:[
-          { label:'🔐 User cung cấp test account', preview:'Login → crawl đầy đủ', next:3 },
-          { label:'👀 Chỉ crawl public pages', preview:'Tài liệu requirements partial — note assumption', next:4 },
-        ] },
-      { actor:'success', title:'Login OK — full coverage', body:'Crawl được 12 trang authenticated.', addArtifact:{name:'requirements.md', icon:'📑'}, log:['Full crawl: 12 pages'], sets:{coverage:'100%'}, next:5 },
-      { actor:'error', title:'Partial coverage', body:'Tài liệu có note <code>[ASSUMPTION]</code> cho 5 flows không thể verify.', addArtifact:{name:'requirements.md (partial)', icon:'⚠️'}, sets:{coverage:'60%'} },
-      { actor:'success', title:'🎉 Requirements ready', body:'Có thể đưa vào /manual-step-1-context tiếp theo.', log:['DONE'] },
-    ]
-  },
-
-  fetch_jira: {
-    name: '/fetch_jira_requirements',
-    badge: 'Jira', category: 'integration',
-    desc: 'Lấy requirements từ Jira ticket về thành Markdown',
-    steps: [
-      { actor:'user', title:'User: "Lấy ticket PROJ-1234"', body:'', log:['Fetch PROJ-1234'] },
-      { actor:'system', title:'Đọc credentials .env', body:'<code>JIRA_HOST</code>, <code>JIRA_EMAIL</code>, <code>JIRA_API_TOKEN</code>', log:['Auth Jira'] },
-      { actor:'decision', title:'❓ Auth thất bại?',
-        branches:[
-          { label:'✅ Auth OK', preview:'Fetch ticket + linked issues', next:3 },
-          { label:'❌ 401 Unauthorized', preview:'Token expired hoặc sai email', next:5 },
-        ] },
-      { actor:'system', title:'Fetch ticket', body:'Lấy summary, description, acceptance criteria, attachments.', log:['Got 1 ticket','3 sub-tasks linked'] },
-      { actor:'success', title:'🎉 Saved', body:'Tạo file <code>PROJ-1234.md</code> + JSON dump.', addArtifact:{name:'PROJ-1234.md', icon:'🎫'}, addArtifact2:{name:'PROJ-1234.json', icon:'📋'}, next:null },
-      { actor:'error', title:'❌ Auth failed', body:'Hướng dẫn user:<pre>1. Tạo API token: id.atlassian.com/manage-profile/security/api-tokens\n2. Cập nhật .env\n3. Chạy lại</pre>', sets:{status:'AUTH_FAIL'} },
-    ]
-  },
-
   analyze_doc: {
     name: '/analyze_requirement_document',
     badge: 'Phân tích', category: 'requirement',
@@ -564,17 +528,6 @@ const SCENARIOS = {
   },
 
   // ============ TEST CASE GENERATION ============
-  tc_quick: {
-    name: '/generate_testcases_from_requirements (QUICK)',
-    badge: 'Quick', category: 'testcase',
-    desc: 'Sinh TC nhanh, không qua 6 bước RBT',
-    steps: [
-      { actor:'user', title:'User: "Sinh TC cho login form"', body:'', log:['QUICK mode'] },
-      { actor:'system', title:'Skip phân tích sâu', body:'Bỏ qua RBT, sinh thẳng TC từ requirement.', log:['Generate 18 TC'] },
-      { actor:'success', title:'TC ready (chất lượng cơ bản)', body:'Phù hợp khi requirement rõ ràng, scope nhỏ. Nếu cần coverage tốt hơn → dùng FULL RBT.', addArtifact:{name:'testcases.md', icon:'🧪'}, log:['DONE','TC: 18'] },
-    ]
-  },
-
   cross_module: {
     name: '/generate_cross_module_test_plan',
     badge: 'Cross', category: 'testcase',
@@ -625,26 +578,6 @@ const SCENARIOS = {
   },
 
   // ============ AUTOMATION VARIANTS ============
-  ui_flow: {
-    name: '/generate_automation_from_ui_flow',
-    badge: 'UI Flow', category: 'automation',
-    desc: 'Không có manual TC — record UI flow trực tiếp + sinh script',
-    steps: [
-      { actor:'user', title:'User: "Tự thực hiện luồng login + verify dashboard"', body:'', log:['UI flow mode'] },
-      { actor:'system', title:'Mở browser MCP', body:'Tự nhập username, password, click login.', log:['Step 1: open URL','Step 2: fill form','Step 3: submit'] },
-      { actor:'decision', title:'❓ Click vào "Login" trả về gì?',
-        branches:[
-          { label:'✅ Redirect /dashboard', preview:'Happy path — record steps', next:3 },
-          { label:'⏳ Loading > 5s', preview:'Wait condition cần dài hơn', next:4 },
-          { label:'❌ Error: invalid credentials', preview:'Test data sai — báo user', next:5 },
-        ] },
-      { actor:'success', title:'Record + sinh script', body:'<pre>await page.getByLabel("Email").fill(EMAIL);\nawait page.getByLabel("Password").fill(PWD);\nawait page.getByRole("button", {name:"Login"}).click();\nawait expect(page).toHaveURL(/dashboard/);</pre>', addArtifact:{name:'login.spec.ts', icon:'🧪'}, next:6 },
-      { actor:'system', title:'Adjust timeout', body:'Tăng <code>timeout: 10000</code> cho navigation assertion.', log:['Slow network detected'], next:6 },
-      { actor:'error', title:'Test data invalid', body:'Yêu cầu user cung cấp account hợp lệ trong .env', sets:{status:'WAITING'} },
-      { actor:'success', title:'🎉 Script PASS', body:'Chạy 2 lần liên tiếp PASS.', log:['DONE'] },
-    ]
-  },
-
   framework: {
     name: '/generate_automation_framework',
     badge: 'Scaffold', category: 'automation',
@@ -679,26 +612,6 @@ const SCENARIOS = {
         ] },
       { actor:'success', title:'TC sinh xong', body:'120 TC: positive, negative, schema, boundary.', addArtifact:{name:'api_testcases.md', icon:'📋'}, next:null },
       { actor:'system', title:'Sinh REST Assured + chạy', body:'<pre>✓ 98 PASS\n✗ 12 FAIL (4xx response không như spec)\n⚠️ 10 SKIP (auth required)</pre>', addArtifact:{name:'tests/api/UsersApiTest.java', icon:'☕'}, log:['12 endpoints fail spec','Report generated'], sets:{spec_violations:'12'} },
-    ]
-  },
-
-  // ============ INTEGRATION ============
-  xray_push: {
-    name: '/import_test_results_xray',
-    badge: 'Xray', category: 'integration',
-    desc: 'Đẩy kết quả Playwright/JUnit/Allure lên Xray',
-    steps: [
-      { actor:'user', title:'User: "Push results sau khi chạy CI"', body:'', log:['Push to Xray'] },
-      { actor:'system', title:'Detect format', body:'Phát hiện <code>junit-results.xml</code> + <code>cucumber.json</code>', log:['Format: JUnit'] },
-      { actor:'system', title:'Auth Xray Cloud', body:'Đọc <code>.xray_token</code>, auth client_id/secret.', log:['Auth OK'] },
-      { actor:'decision', title:'❓ Test Execution mới hay update?',
-        branches:[
-          { label:'➕ Tạo Test Execution mới', preview:'Mỗi CI run 1 execution', next:4 },
-          { label:'♻️ Update existing TEST-001', preview:'Append result vào execution cũ', next:5 },
-        ] },
-      { actor:'success', title:'Created TEST-EXEC-456', body:'42 test results pushed.', log:['Pushed 42 results'], next:6 },
-      { actor:'success', title:'Updated TEST-EXEC-001', body:'Append 42 mới + retry 8 cũ.', next:6 },
-      { actor:'success', title:'🎉 Done', body:'Link Jira: <code>TEST-EXEC-456</code>', log:['DONE'] },
     ]
   },
 
@@ -779,24 +692,6 @@ const SCENARIOS = {
     ]
   },
 
-  app_test_plan: {
-    name: '/generate_application_test_plan',
-    badge: 'Plan', category: 'testcase',
-    desc: 'Khám phá toàn bộ web app, sinh test plan tổng thể',
-    steps: [
-      { actor:'user', title:'User: "Test plan cho app https://shop.example.com"', body:'', log:['Explore app'] },
-      { actor:'system', title:'Crawl sitemap + main flows', body:'<pre>📍 Found 24 pages\n🔗 Identified 8 user flows\n👥 3 user roles (guest/user/admin)</pre>', log:['Crawl complete'] },
-      { actor:'decision', title:'❓ Mode?',
-        branches:[
-          { label:'📋 PLAN', preview:'Chỉ test plan markdown', next:3 },
-          { label:'⚡ FULL', preview:'Plan + automation skeleton', next:4 },
-        ] },
-      { actor:'success', title:'Test plan markdown', body:'Modules, scope, risk, schedule, exit criteria.', addArtifact:{name:'test_plan.md', icon:'📋'}, next:null },
-      { actor:'system', title:'Plan + scaffold framework', body:'Auto chạy /generate_automation_framework theo stack đã detect.', addArtifact:{name:'test_plan.md', icon:'📋'}, addArtifact2:{name:'tests/ (skeleton)', icon:'📦'} },
-      { actor:'success', title:'🎉 Ready to start automation', body:'Có plan + framework — chỉ cần sinh test scripts.', log:['DONE'] },
-    ]
-  },
-
   gen_locator_happy: {
     name: '/generate_locator (happy path)',
     badge: 'Locator', category: 'automation',
@@ -849,22 +744,14 @@ let vars = {};
 // Dùng để hiển thị banner trên stage giúp user thấy được "trước khi chạy cần gì, sau khi xong dùng để làm gì".
 const IO_MAP = {
   // === REQUIREMENT ===
-  req_from_website:   { requires: ['(URL website)'], produces: ['requirements.md'],
-                        next: ['analyze_doc', 'manual_full', 'rbt_quick', 'tc_quick'] },
-  fetch_jira:         { requires: ['(Jira ticket ID)', '.env credentials'], produces: ['PROJ-1234.md', 'PROJ-1234.json'],
-                        next: ['analyze_doc', 'manual_full', 'rbt_quick'] },
   analyze_doc:        { requires: ['requirements.md (hoặc Word/PDF/Jira description)'], produces: ['analysis.md'],
-                        next: ['tc_quick', 'rbt_quick', 'manual_full', 'app_test_plan', 'cross_module', 'test_data_simple'] },
+                        next: ['rbt_quick', 'manual_full', 'cross_module', 'test_data_simple'] },
 
   // === TEST CASES ===
-  tc_quick:           { requires: ['analysis.md (hoặc requirements.md)'], produces: ['testcases.md'],
-                        next: ['auto_from_tc', 'one_click', 'gen_locator_happy'] },
   rbt_quick:          { requires: ['analysis.md (hoặc requirements.md)'], produces: ['testcases_rbt.md'],
                         next: ['auto_from_tc', 'one_click'] },
   manual_full:        { requires: ['requirements.md / analysis.md / Jira ticket'], produces: ['01_context.md', '02_qna.md', '03_modules.md', '04_traceability.md', '05_testcases.md', '06_final.md'],
                         next: ['auto_from_tc', 'one_click', 'excel_export (skill)'] },
-  app_test_plan:      { requires: ['(URL app)', 'analysis.md (optional)'], produces: ['test_plan.md', 'tests/ skeleton'],
-                        next: ['framework', 'manual_full', 'cross_module'] },
   cross_module:       { requires: ['analysis.md (multi-module)', '(URLs nếu BROWSER mode)'], produces: ['cross_module_plan.md'],
                         next: ['combinatorial', 'auto_from_tc'] },
 
@@ -876,31 +763,25 @@ const IO_MAP = {
 
   // === AUTOMATION ===
   automation_full:    { requires: ['testcases.md (manual TC)'], produces: ['pages/*.ts', 'utils/DataGenerator.ts', 'tests/*.spec.ts'],
-                        next: ['xray_push', 'flaky_fix'] },
+                        next: ['flaky_fix'] },
   one_click:          { requires: ['testcases.md (chuẩn, đủ Expected Result)'], produces: ['pages/', 'tests/', 'báo cáo PASS'],
-                        next: ['xray_push'] },
+                        next: ['flaky_fix'] },
   auto_from_tc:       { requires: ['testcases.md', 'locators.md (optional)'], produces: ['tests/*.spec.ts'],
-                        next: ['xray_push', 'flaky_fix', 'flaky_analyze_only'] },
-  ui_flow:            { requires: ['(URL + scenario mô tả)', 'không cần manual TC'], produces: ['tests/*.spec.ts (recorded)'],
-                        next: ['xray_push'] },
+                        next: ['flaky_fix', 'flaky_analyze_only'] },
   framework:          { requires: ['(tech stack chọn)'], produces: ['package.json/pom.xml', 'config files', '.github/workflows/ci.yml'],
-                        next: ['ui_flow', 'auto_from_tc'] },
+                        next: ['auto_from_tc'] },
   api_swagger:        { requires: ['swagger.json / openapi.yaml'], produces: ['api_testcases.md', 'tests/api/*.java'],
-                        next: ['xray_push', 'flaky_fix'] },
+                        next: ['flaky_fix'] },
   gen_locator_happy:  { requires: ['(element trên DOM thật)', 'Playwright MCP running'], produces: ['locator snippet'],
-                        next: ['auto_from_tc', 'ui_flow'] },
+                        next: ['auto_from_tc'] },
   blocked:            { requires: ['(element trên DOM)', 'Playwright MCP'], produces: ['locator (fragile) hoặc dev-todo.md'],
                         next: ['(chờ dev fix)', 'gen_locator_happy'] },
 
   // === MAINTENANCE ===
   flaky_fix:          { requires: ['tests/*.spec.ts (flaky)'], produces: ['code patched', 'flaky-fix-report.md'],
-                        next: ['xray_push'] },
+                        next: ['(end of pipeline)'] },
   flaky_analyze_only: { requires: ['tests/*.spec.ts (flaky)'], produces: ['flaky_analysis.md (chỉ report)'],
                         next: ['flaky_fix (tự fix)', '(dev manual fix)'] },
-
-  // === INTEGRATION ===
-  xray_push:          { requires: ['junit-results.xml / cucumber.json', '.xray_token'], produces: ['Test Execution trên Jira/Xray'],
-                        next: ['(end of pipeline)'] },
 
   // === EDGE ===
   credit_burn:        { requires: ['(workflow dài — vd one_click TC lớn)'], produces: ['(context summary tự sinh)'],
