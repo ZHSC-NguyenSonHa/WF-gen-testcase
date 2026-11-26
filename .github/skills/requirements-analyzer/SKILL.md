@@ -49,7 +49,38 @@ Chia thành các **User Stories** hoặc **Use Cases**:
 ### 3.4. Các luồng xử lý và Báo lỗi (Business Rules & Validations)
 Liệt kê chi tiết các Validation Message mong đợi khi người dùng nhập sai dữ liệu.
 
+## 3.5. Xuất Excel bằng `md_to_xlsx_styled.js` — Quy ước heading quyết định số sheet
+
+Script `scripts/convert_excel/md_to_xlsx_styled.js` convert file `.md` → `.xlsx` (header xanh đậm, alternating rows, border, freeze, autofilter). **Số sheet output do heading Markdown quyết định**:
+
+- Script tự xác định **level heading nhỏ nhất** (`#` ít dấu `#` nhất) đang có trong file → level đó là **level tạo sheet mới**.
+- Heading **sâu hơn** level đó (vd `###` khi level tạo sheet là `##`) chỉ tạo **tiêu đề section** (dòng bold, merge cell) nằm gộp chung trong sheet của heading cha — KHÔNG tạo sheet riêng.
+- Nhiều bảng dưới cùng 1 heading cấp sheet sẽ được xếp chồng (stack) trong cùng 1 sheet, cách nhau 1 dòng trống.
+
+**Mặc định (mỗi mục 1 sheet):** Dùng toàn bộ heading cùng cấp `##` cho mỗi mục lớn → mỗi bảng ra 1 sheet riêng (giữ nguyên hành vi cũ, phù hợp khi cần nhiều sheet chi tiết).
+
+**Khi user yêu cầu gộp/consolidate (vd "chỉ cần 2 sheet: Tổng quan + QnA"):**
+- Cấu trúc `.md` chỉ dùng **2 heading `##`** ở mức cao nhất (vd `## Spec tổng quan`, `## QnA`).
+- Toàn bộ mục con bên trong (Thông tin tài liệu, Business Rules, Sơ đồ trạng thái...) dùng `###` → tự động gộp thành section trong cùng 1 sheet.
+- **Không** đặt heading `#` (H1) ở đầu file nếu không muốn nó bị tính là level tạo sheet — nếu cần tiêu đề tài liệu, dùng text in đậm (`**Tiêu đề**`) thay vì `# Tiêu đề`.
+
+Ví dụ cấu trúc cho output 2-sheet:
+```markdown
+**📋 Phân Tích Requirement: <Tên màn hình>**
+
+## Spec tổng quan
+### Thông tin tài liệu
+| ... |
+### Business Rules
+| ... |
+
+## QnA
+### Danh sách câu hỏi & điểm mơ hồ cần xác nhận
+| # | Mã | Câu hỏi | Nguy cơ | Mức độ | ... |
+```
+
 ## 4. Bắt buộc (Strict Rules)
 - Luôn viết bằng **Tiếng Việt**.
 - Không tự suy diễn các yêu cầu nghiệp vụ phức tạp nếu không có căn cứ từ UI. Nếu thiếu logic, hãy liệt kê chúng vào mục "Câu hỏi/Làm rõ với PO-User".
 - Nếu có Playwright MCP, ưu tiên mở browser thật để screenshot/capture giao diện nếu cần.
+

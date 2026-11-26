@@ -1,0 +1,2620 @@
+{
+  "input": "e:\\Auto_Gen AI\\Q 2\\Q\\CMS\\Spec\\海外\\compare.xlsx",
+  "sha256": "25b280143513e41373fae3149b76b2910f2b3adb4f50050da34554fc1b5bc6e2",
+  "fields": [
+    {
+      "number": 1,
+      "name": "会社略称",
+      "source": "入力画面!BO9",
+      "properties": [
+        {
+          "cell": "BN9",
+          "text": "1"
+        },
+        {
+          "cell": "BO9",
+          "text": "会社略称"
+        },
+        {
+          "cell": "BP9",
+          "text": "×"
+        },
+        {
+          "cell": "BQ9",
+          "text": "×"
+        },
+        {
+          "cell": "BR9",
+          "text": "×"
+        },
+        {
+          "cell": "BS9",
+          "text": "会社リソース"
+        },
+        {
+          "cell": "BT9",
+          "text": "ー"
+        },
+        {
+          "cell": "BV9",
+          "text": "会社名を選択すると自動的に会社略称が反映"
+        },
+        {
+          "cell": "BW9",
+          "text": "ー"
+        },
+        {
+          "cell": "BX9",
+          "text": "ー"
+        },
+        {
+          "cell": "BY9",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "申請書タイトル",
+      "source": "入力画面!BO10",
+      "properties": [
+        {
+          "cell": "BN10",
+          "text": "2"
+        },
+        {
+          "cell": "BO10",
+          "text": "申請書タイトル"
+        },
+        {
+          "cell": "BP10",
+          "text": "×"
+        },
+        {
+          "cell": "BQ10",
+          "text": "×"
+        },
+        {
+          "cell": "BR10",
+          "text": "×"
+        },
+        {
+          "cell": "BS10",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT10",
+          "text": "ー"
+        },
+        {
+          "cell": "BV10",
+          "text": "選択した申請書タイトルを表示\n「出店稟議書」「改装・改修稟議書」「契約更新稟議書」「クローズ（方針）稟議書」「クローズ（実行）稟議書」"
+        },
+        {
+          "cell": "BW10",
+          "text": "ー"
+        },
+        {
+          "cell": "BX10",
+          "text": "ー"
+        },
+        {
+          "cell": "BY10",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "情報区分",
+      "source": "入力画面!BO11",
+      "properties": [
+        {
+          "cell": "BN11",
+          "text": "3"
+        },
+        {
+          "cell": "BO11",
+          "text": "情報区分"
+        },
+        {
+          "cell": "BP11",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ11",
+          "text": "〇"
+        },
+        {
+          "cell": "BR11",
+          "text": "〇"
+        },
+        {
+          "cell": "BS11",
+          "text": "ラジオボタン"
+        },
+        {
+          "cell": "BT11",
+          "text": "ー"
+        },
+        {
+          "cell": "BV11",
+          "text": "4つの値から選択、1：極秘情報、２：秘密情報、３：営業秘情報、４：社外秘情報"
+        },
+        {
+          "cell": "BW11",
+          "text": "ー"
+        },
+        {
+          "cell": "BX11",
+          "text": "ー"
+        },
+        {
+          "cell": "BY11",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "申請書No.",
+      "source": "入力画面!BO12",
+      "properties": [
+        {
+          "cell": "BN12",
+          "text": "4"
+        },
+        {
+          "cell": "BO12",
+          "text": "申請書No."
+        },
+        {
+          "cell": "BP12",
+          "text": "×"
+        },
+        {
+          "cell": "BQ12",
+          "text": "×"
+        },
+        {
+          "cell": "BR12",
+          "text": "×"
+        },
+        {
+          "cell": "BS12",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT12",
+          "text": "256"
+        },
+        {
+          "cell": "BV12",
+          "text": "申請開始時に自動採番"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "申請日",
+      "source": "入力画面!BO13",
+      "properties": [
+        {
+          "cell": "BN13",
+          "text": "5"
+        },
+        {
+          "cell": "BO13",
+          "text": "申請日"
+        },
+        {
+          "cell": "BP13",
+          "text": "×"
+        },
+        {
+          "cell": "BQ13",
+          "text": "×"
+        },
+        {
+          "cell": "BR13",
+          "text": "×"
+        },
+        {
+          "cell": "BS13",
+          "text": "日付入力"
+        },
+        {
+          "cell": "BT13",
+          "text": "6"
+        },
+        {
+          "cell": "BV13",
+          "text": "申請開始時に自動取得"
+        },
+        {
+          "cell": "BW13",
+          "text": "ー"
+        },
+        {
+          "cell": "BX13",
+          "text": "ー"
+        },
+        {
+          "cell": "BY13",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": "アラートメッセージ",
+      "source": "入力画面!BO14",
+      "properties": [
+        {
+          "cell": "BN14",
+          "text": "6"
+        },
+        {
+          "cell": "BO14",
+          "text": "アラートメッセージ"
+        },
+        {
+          "cell": "BP14",
+          "text": "×"
+        },
+        {
+          "cell": "BQ14",
+          "text": "×"
+        },
+        {
+          "cell": "BR14",
+          "text": "×"
+        },
+        {
+          "cell": "BS14",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT14",
+          "text": "256"
+        },
+        {
+          "cell": "BV14",
+          "text": "差戻しor取止めを行った際に、申請書上部に赤字で表示\n「取戻し又は差戻しが行われた為、現在承認を行う事は出来ません。\n再申請後、再度承認依頼メールが送信されます。」"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "name": "連絡先",
+      "source": "入力画面!BO15",
+      "properties": [
+        {
+          "cell": "BN15",
+          "text": "7"
+        },
+        {
+          "cell": "BO15",
+          "text": "連絡先"
+        },
+        {
+          "cell": "BP15",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ15",
+          "text": "×"
+        },
+        {
+          "cell": "BR15",
+          "text": "×"
+        },
+        {
+          "cell": "BS15",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT15",
+          "text": "15"
+        },
+        {
+          "cell": "BV15",
+          "text": "ログインユーザーの連絡先の値を取得"
+        },
+        {
+          "cell": "BW15",
+          "text": "ー"
+        },
+        {
+          "cell": "BX15",
+          "text": "ー"
+        },
+        {
+          "cell": "BY15",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "name": "申請者ラベル名",
+      "source": "入力画面!BO16",
+      "properties": [
+        {
+          "cell": "BN16",
+          "text": "8"
+        },
+        {
+          "cell": "BO16",
+          "text": "申請者ラベル名"
+        },
+        {
+          "cell": "BP16",
+          "text": "×"
+        },
+        {
+          "cell": "BQ16",
+          "text": "×"
+        },
+        {
+          "cell": "BR16",
+          "text": "×"
+        },
+        {
+          "cell": "BS16",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT16",
+          "text": "ー"
+        },
+        {
+          "cell": "BV16",
+          "text": "固定文言：申請者"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "name": "関係部門１ラベル名",
+      "source": "入力画面!BO17",
+      "properties": [
+        {
+          "cell": "BN17",
+          "text": "9"
+        },
+        {
+          "cell": "BO17",
+          "text": "関係部門１ラベル名"
+        },
+        {
+          "cell": "BP17",
+          "text": "×"
+        },
+        {
+          "cell": "BQ17",
+          "text": "×"
+        },
+        {
+          "cell": "BR17",
+          "text": "×"
+        },
+        {
+          "cell": "BS17",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT17",
+          "text": "ー"
+        },
+        {
+          "cell": "BV17",
+          "text": "固定文言：関係部門１"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "name": "関係部門２ラベル名",
+      "source": "入力画面!BO18",
+      "properties": [
+        {
+          "cell": "BN18",
+          "text": "10"
+        },
+        {
+          "cell": "BO18",
+          "text": "関係部門２ラベル名"
+        },
+        {
+          "cell": "BP18",
+          "text": "×"
+        },
+        {
+          "cell": "BQ18",
+          "text": "×"
+        },
+        {
+          "cell": "BR18",
+          "text": "×"
+        },
+        {
+          "cell": "BS18",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT18",
+          "text": "ー"
+        },
+        {
+          "cell": "BV18",
+          "text": "固定文言：関係部門２"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "name": "関係部門３ラベル名",
+      "source": "入力画面!BO19",
+      "properties": [
+        {
+          "cell": "BN19",
+          "text": "11"
+        },
+        {
+          "cell": "BO19",
+          "text": "関係部門３ラベル名"
+        },
+        {
+          "cell": "BP19",
+          "text": "×"
+        },
+        {
+          "cell": "BQ19",
+          "text": "×"
+        },
+        {
+          "cell": "BR19",
+          "text": "×"
+        },
+        {
+          "cell": "BS19",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT19",
+          "text": "ー"
+        },
+        {
+          "cell": "BV19",
+          "text": "固定文言：関係部門３"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "name": "COOラベル名",
+      "source": "入力画面!BO20",
+      "properties": [
+        {
+          "cell": "BN20",
+          "text": "12"
+        },
+        {
+          "cell": "BO20",
+          "text": "COOラベル名"
+        },
+        {
+          "cell": "BP20",
+          "text": "×"
+        },
+        {
+          "cell": "BQ20",
+          "text": "×"
+        },
+        {
+          "cell": "BR20",
+          "text": "×"
+        },
+        {
+          "cell": "BS20",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT20",
+          "text": "ー"
+        },
+        {
+          "cell": "BV20",
+          "text": "固定文言：COO"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "name": "担当者ラベル名",
+      "source": "入力画面!BO21",
+      "properties": [
+        {
+          "cell": "BN21",
+          "text": "13"
+        },
+        {
+          "cell": "BO21",
+          "text": "担当者ラベル名"
+        },
+        {
+          "cell": "BP21",
+          "text": "×"
+        },
+        {
+          "cell": "BQ21",
+          "text": "×"
+        },
+        {
+          "cell": "BR21",
+          "text": "×"
+        },
+        {
+          "cell": "BS21",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT21",
+          "text": "ー"
+        },
+        {
+          "cell": "BV21",
+          "text": "固定文言：担当者"
+        },
+        {
+          "cell": "BZ21",
+          "text": "G経営本部担当➡「担当者」へ変更"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "name": "部門長ラベル名",
+      "source": "入力画面!BO22",
+      "properties": [
+        {
+          "cell": "BN22",
+          "text": "14"
+        },
+        {
+          "cell": "BO22",
+          "text": "部門長ラベル名"
+        },
+        {
+          "cell": "BP22",
+          "text": "×"
+        },
+        {
+          "cell": "BQ22",
+          "text": "×"
+        },
+        {
+          "cell": "BR22",
+          "text": "×"
+        },
+        {
+          "cell": "BS22",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT22",
+          "text": "ー"
+        },
+        {
+          "cell": "BV22",
+          "text": "固定文言：部門長"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "name": "担当役員ラベル名",
+      "source": "入力画面!BO23",
+      "properties": [
+        {
+          "cell": "BN23",
+          "text": "15"
+        },
+        {
+          "cell": "BO23",
+          "text": "担当役員ラベル名"
+        },
+        {
+          "cell": "BP23",
+          "text": "×"
+        },
+        {
+          "cell": "BQ23",
+          "text": "×"
+        },
+        {
+          "cell": "BR23",
+          "text": "×"
+        },
+        {
+          "cell": "BS23",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT23",
+          "text": "ー"
+        },
+        {
+          "cell": "BV23",
+          "text": "固定文言：担当役員"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "name": "決裁者ラベル名",
+      "source": "入力画面!BO24",
+      "properties": [
+        {
+          "cell": "BN24",
+          "text": "16"
+        },
+        {
+          "cell": "BO24",
+          "text": "決裁者ラベル名"
+        },
+        {
+          "cell": "BP24",
+          "text": "×"
+        },
+        {
+          "cell": "BQ24",
+          "text": "×"
+        },
+        {
+          "cell": "BR24",
+          "text": "×"
+        },
+        {
+          "cell": "BS24",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT24",
+          "text": "ー"
+        },
+        {
+          "cell": "BV24",
+          "text": "固定文言：決裁者"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "name": "/",
+      "source": "入力画面!BO25",
+      "properties": [
+        {
+          "cell": "BN25",
+          "text": "17"
+        },
+        {
+          "cell": "BO25",
+          "text": "/"
+        },
+        {
+          "cell": "BP25",
+          "text": "×"
+        },
+        {
+          "cell": "BQ25",
+          "text": "×"
+        },
+        {
+          "cell": "BR25",
+          "text": "×"
+        },
+        {
+          "cell": "BS25",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT25",
+          "text": "ー"
+        },
+        {
+          "cell": "BV25",
+          "text": "使用しない承認欄を「/」で表示"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "name": "申請者",
+      "source": "入力画面!BO26",
+      "properties": [
+        {
+          "cell": "BN26",
+          "text": "18"
+        },
+        {
+          "cell": "BO26",
+          "text": "申請者"
+        },
+        {
+          "cell": "BP26",
+          "text": "×"
+        },
+        {
+          "cell": "BQ26",
+          "text": "×"
+        },
+        {
+          "cell": "BR26",
+          "text": "〇"
+        },
+        {
+          "cell": "BS26",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT26",
+          "text": "ー"
+        },
+        {
+          "cell": "BV26",
+          "text": "ログインユーザーを取得"
+        },
+        {
+          "cell": "BW26",
+          "text": "ー"
+        },
+        {
+          "cell": "BX26",
+          "text": "ー"
+        },
+        {
+          "cell": "BY26",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "name": "関係部門１",
+      "source": "入力画面!BO27",
+      "properties": [
+        {
+          "cell": "BN27",
+          "text": "19"
+        },
+        {
+          "cell": "BO27",
+          "text": "関係部門１"
+        },
+        {
+          "cell": "BP27",
+          "text": "×"
+        },
+        {
+          "cell": "BQ27",
+          "text": "〇"
+        },
+        {
+          "cell": "BR27",
+          "text": "〇"
+        },
+        {
+          "cell": "BS27",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT27",
+          "text": "ー"
+        },
+        {
+          "cell": "BW27",
+          "text": "ー"
+        },
+        {
+          "cell": "BX27",
+          "text": "ー"
+        },
+        {
+          "cell": "BY27",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "name": "関係部門２",
+      "source": "入力画面!BO28",
+      "properties": [
+        {
+          "cell": "BN28",
+          "text": "20"
+        },
+        {
+          "cell": "BO28",
+          "text": "関係部門２"
+        },
+        {
+          "cell": "BP28",
+          "text": "×"
+        },
+        {
+          "cell": "BQ28",
+          "text": "〇"
+        },
+        {
+          "cell": "BR28",
+          "text": "〇"
+        },
+        {
+          "cell": "BS28",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT28",
+          "text": "ー"
+        },
+        {
+          "cell": "BW28",
+          "text": "ー"
+        },
+        {
+          "cell": "BX28",
+          "text": "ー"
+        },
+        {
+          "cell": "BY28",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "name": "関係部門３",
+      "source": "入力画面!BO29",
+      "properties": [
+        {
+          "cell": "BN29",
+          "text": "21"
+        },
+        {
+          "cell": "BO29",
+          "text": "関係部門３"
+        },
+        {
+          "cell": "BP29",
+          "text": "×"
+        },
+        {
+          "cell": "BQ29",
+          "text": "〇"
+        },
+        {
+          "cell": "BR29",
+          "text": "〇"
+        },
+        {
+          "cell": "BS29",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT29",
+          "text": "ー"
+        },
+        {
+          "cell": "BW29",
+          "text": "ー"
+        },
+        {
+          "cell": "BX29",
+          "text": "ー"
+        },
+        {
+          "cell": "BY29",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "name": "COO",
+      "source": "入力画面!BO30",
+      "properties": [
+        {
+          "cell": "BN30",
+          "text": "22"
+        },
+        {
+          "cell": "BO30",
+          "text": "COO"
+        },
+        {
+          "cell": "BP30",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ30",
+          "text": "〇"
+        },
+        {
+          "cell": "BR30",
+          "text": "×"
+        },
+        {
+          "cell": "BS30",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT30",
+          "text": "ー"
+        },
+        {
+          "cell": "BV30",
+          "text": "承認者マスタの「COO」から取得\n申請者がユーザ変更も可能"
+        },
+        {
+          "cell": "BW30",
+          "text": "ー"
+        },
+        {
+          "cell": "BX30",
+          "text": "ー"
+        },
+        {
+          "cell": "BY30",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "name": "担当者",
+      "source": "入力画面!BO31",
+      "properties": [
+        {
+          "cell": "BN31",
+          "text": "23"
+        },
+        {
+          "cell": "BO31",
+          "text": "担当者"
+        },
+        {
+          "cell": "BP31",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ31",
+          "text": "×"
+        },
+        {
+          "cell": "BR31",
+          "text": "〇"
+        },
+        {
+          "cell": "BS31",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT31",
+          "text": "ー"
+        },
+        {
+          "cell": "BV31",
+          "text": "各社承認者マスタの「担当者PG」から自動取得"
+        },
+        {
+          "cell": "BW31",
+          "text": "ー"
+        },
+        {
+          "cell": "BX31",
+          "text": "ー"
+        },
+        {
+          "cell": "BY31",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ31",
+          "text": "G経営本部担当➡「担当者」へ変更"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "name": "部門長",
+      "source": "入力画面!BO32",
+      "properties": [
+        {
+          "cell": "BN32",
+          "text": "24"
+        },
+        {
+          "cell": "BO32",
+          "text": "部門長"
+        },
+        {
+          "cell": "BP32",
+          "text": "×"
+        },
+        {
+          "cell": "BQ32",
+          "text": "×"
+        },
+        {
+          "cell": "BR32",
+          "text": "〇"
+        },
+        {
+          "cell": "BS32",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT32",
+          "text": "ー"
+        },
+        {
+          "cell": "BV32",
+          "text": "アプリケーション画面の「部門長」から取得"
+        },
+        {
+          "cell": "BW32",
+          "text": "ー"
+        },
+        {
+          "cell": "BX32",
+          "text": "ー"
+        },
+        {
+          "cell": "BY32",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "name": "担当役員",
+      "source": "入力画面!BO33",
+      "properties": [
+        {
+          "cell": "BN33",
+          "text": "25"
+        },
+        {
+          "cell": "BO33",
+          "text": "担当役員"
+        },
+        {
+          "cell": "BP33",
+          "text": "×"
+        },
+        {
+          "cell": "BQ33",
+          "text": "×"
+        },
+        {
+          "cell": "BR33",
+          "text": "〇"
+        },
+        {
+          "cell": "BS33",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT33",
+          "text": "ー"
+        },
+        {
+          "cell": "BV33",
+          "text": "アプリケーション画面の「担当役員」から取得"
+        },
+        {
+          "cell": "BW33",
+          "text": "ー"
+        },
+        {
+          "cell": "BX33",
+          "text": "ー"
+        },
+        {
+          "cell": "BY33",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "name": "決裁者",
+      "source": "入力画面!BO34",
+      "properties": [
+        {
+          "cell": "BN34",
+          "text": "26"
+        },
+        {
+          "cell": "BO34",
+          "text": "決裁者"
+        },
+        {
+          "cell": "BP34",
+          "text": "×"
+        },
+        {
+          "cell": "BQ34",
+          "text": "×"
+        },
+        {
+          "cell": "BR34",
+          "text": "×"
+        },
+        {
+          "cell": "BS34",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT34",
+          "text": "ー"
+        },
+        {
+          "cell": "BV34",
+          "text": "アプリケーション画面の「決裁者」から取得"
+        },
+        {
+          "cell": "BW34",
+          "text": "ー"
+        },
+        {
+          "cell": "BX34",
+          "text": "ー"
+        },
+        {
+          "cell": "BY34",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "name": "所属会社名",
+      "source": "入力画面!BO35",
+      "properties": [
+        {
+          "cell": "BN35",
+          "text": "27"
+        },
+        {
+          "cell": "BO35",
+          "text": "所属会社名"
+        },
+        {
+          "cell": "BP35",
+          "text": "×"
+        },
+        {
+          "cell": "BQ35",
+          "text": "×"
+        },
+        {
+          "cell": "BR35",
+          "text": "〇"
+        },
+        {
+          "cell": "BS35",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT35",
+          "text": "ー"
+        },
+        {
+          "cell": "BV35",
+          "text": "ログインユーザーの所属会社を自動取得"
+        },
+        {
+          "cell": "BW35",
+          "text": "ー"
+        },
+        {
+          "cell": "BX35",
+          "text": "ー"
+        },
+        {
+          "cell": "BY35",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "name": "所属",
+      "source": "入力画面!BO36",
+      "properties": [
+        {
+          "cell": "BN36",
+          "text": "28"
+        },
+        {
+          "cell": "BO36",
+          "text": "所属"
+        },
+        {
+          "cell": "BP36",
+          "text": "×"
+        },
+        {
+          "cell": "BQ36",
+          "text": "×"
+        },
+        {
+          "cell": "BR36",
+          "text": "〇"
+        },
+        {
+          "cell": "BS36",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT36",
+          "text": "ー"
+        },
+        {
+          "cell": "BV36",
+          "text": "ログインユーザーの所属グループを自動取得"
+        },
+        {
+          "cell": "BW36",
+          "text": "ー"
+        },
+        {
+          "cell": "BX36",
+          "text": "ー"
+        },
+        {
+          "cell": "BY36",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "name": "社員番号",
+      "source": "入力画面!BO37",
+      "properties": [
+        {
+          "cell": "BN37",
+          "text": "29"
+        },
+        {
+          "cell": "BO37",
+          "text": "社員番号"
+        },
+        {
+          "cell": "BP37",
+          "text": "×"
+        },
+        {
+          "cell": "BQ37",
+          "text": "×"
+        },
+        {
+          "cell": "BR37",
+          "text": "〇"
+        },
+        {
+          "cell": "BS37",
+          "text": "リソース"
+        },
+        {
+          "cell": "BT37",
+          "text": "ー"
+        },
+        {
+          "cell": "BV37",
+          "text": "ログインユーザーの社員番号を自動取得"
+        },
+        {
+          "cell": "BW37",
+          "text": "ー"
+        },
+        {
+          "cell": "BX37",
+          "text": "ー"
+        },
+        {
+          "cell": "BY37",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "name": "氏名",
+      "source": "入力画面!BO38",
+      "properties": [
+        {
+          "cell": "BN38",
+          "text": "30"
+        },
+        {
+          "cell": "BO38",
+          "text": "氏名"
+        },
+        {
+          "cell": "BP38",
+          "text": "×"
+        },
+        {
+          "cell": "BQ38",
+          "text": "×"
+        },
+        {
+          "cell": "BR38",
+          "text": "〇"
+        },
+        {
+          "cell": "BS38",
+          "text": "単一選択ユーザ検索"
+        },
+        {
+          "cell": "BT38",
+          "text": "ー"
+        },
+        {
+          "cell": "BV38",
+          "text": "ログインユーザーを自動取得"
+        },
+        {
+          "cell": "BW38",
+          "text": "ー"
+        },
+        {
+          "cell": "BX38",
+          "text": "ー"
+        },
+        {
+          "cell": "BY38",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "name": "稟議は否決される,,,,",
+      "source": "入力画面!BO39",
+      "properties": [
+        {
+          "cell": "BN39",
+          "text": "31"
+        },
+        {
+          "cell": "BO39",
+          "text": "稟議は否決される,,,,"
+        },
+        {
+          "cell": "BP39",
+          "text": "×"
+        },
+        {
+          "cell": "BQ39",
+          "text": "×"
+        },
+        {
+          "cell": "BR39",
+          "text": "×"
+        },
+        {
+          "cell": "BS39",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT39",
+          "text": "ー"
+        },
+        {
+          "cell": "BV39",
+          "text": "固定文言：稟議は否決される場合があります。実行までに稟議承認が間に合うように、日数管理は起案者が行うこと。"
+        },
+        {
+          "cell": "BZ39",
+          "text": "IM:現在表示無し"
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "name": "決裁者確認",
+      "source": "入力画面!BO40",
+      "properties": [
+        {
+          "cell": "BN40",
+          "text": "32"
+        },
+        {
+          "cell": "BO40",
+          "text": "決裁者確認"
+        },
+        {
+          "cell": "BP40",
+          "text": "×"
+        },
+        {
+          "cell": "BQ40",
+          "text": "×"
+        },
+        {
+          "cell": "BR40",
+          "text": "×"
+        },
+        {
+          "cell": "BS40",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT40",
+          "text": "ー"
+        },
+        {
+          "cell": "BV40",
+          "text": "固定文言：決裁者"
+        },
+        {
+          "cell": "BW40",
+          "text": "ー"
+        },
+        {
+          "cell": "BX40",
+          "text": "ー"
+        },
+        {
+          "cell": "BY40",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ40",
+          "text": "ラジオボタンを削除しラベルへ変更"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "name": "添付ファイル",
+      "source": "入力画面!BO41",
+      "properties": [
+        {
+          "cell": "BN41",
+          "text": "33"
+        },
+        {
+          "cell": "BO41",
+          "text": "添付ファイル"
+        },
+        {
+          "cell": "BP41",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ41",
+          "text": "〇"
+        },
+        {
+          "cell": "BR41",
+          "text": "×"
+        },
+        {
+          "cell": "BS41",
+          "text": "複数選択"
+        },
+        {
+          "cell": "BT41",
+          "text": "ー"
+        },
+        {
+          "cell": "BW41",
+          "text": "ー"
+        },
+        {
+          "cell": "BX41",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "name": "ここをクリックしてファイルを選択",
+      "source": "入力画面!BO42",
+      "properties": [
+        {
+          "cell": "BN42",
+          "text": "34"
+        },
+        {
+          "cell": "BO42",
+          "text": "ここをクリックしてファイルを選択"
+        },
+        {
+          "cell": "BP42",
+          "text": "×"
+        },
+        {
+          "cell": "BQ42",
+          "text": "×"
+        },
+        {
+          "cell": "BR42",
+          "text": "×"
+        },
+        {
+          "cell": "BS42",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT42",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "name": "会社名",
+      "source": "入力画面!BO43",
+      "properties": [
+        {
+          "cell": "BN43",
+          "text": "35"
+        },
+        {
+          "cell": "BO43",
+          "text": "会社名"
+        },
+        {
+          "cell": "BP43",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ43",
+          "text": "〇"
+        },
+        {
+          "cell": "BR43",
+          "text": "〇"
+        },
+        {
+          "cell": "BS43",
+          "text": "単一選択組織検索"
+        },
+        {
+          "cell": "BT43",
+          "text": "ー"
+        },
+        {
+          "cell": "BV43",
+          "text": "会社を選択すると赤字の会社略称が自動反映"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "name": "中間HD",
+      "source": "入力画面!BO44",
+      "properties": [
+        {
+          "cell": "BN44",
+          "text": "36"
+        },
+        {
+          "cell": "BO44",
+          "text": "中間HD"
+        },
+        {
+          "cell": "BP44",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ44",
+          "text": "〇"
+        },
+        {
+          "cell": "BR44",
+          "text": "×"
+        },
+        {
+          "cell": "BS44",
+          "text": "ラジオボタン"
+        },
+        {
+          "cell": "BT44",
+          "text": "ー"
+        },
+        {
+          "cell": "BV44",
+          "text": "ファスト-HD、レス-HD、指定なし　から選択\nラジオボタンを変更することで各社承認者マスタから情報を自動取得し表示"
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "name": "下記の内容について,,,",
+      "source": "入力画面!BO45",
+      "properties": [
+        {
+          "cell": "BN45",
+          "text": "37"
+        },
+        {
+          "cell": "BO45",
+          "text": "下記の内容について,,,"
+        },
+        {
+          "cell": "BP45",
+          "text": "×"
+        },
+        {
+          "cell": "BQ45",
+          "text": "×"
+        },
+        {
+          "cell": "BR45",
+          "text": "×"
+        },
+        {
+          "cell": "BS45",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BV45",
+          "text": "固定文言：下記の内容について、実行致したく、ご承認伺い申し上げます。"
+        },
+        {
+          "cell": "BZ45",
+          "text": "IM:現在表示無し"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "name": "内容（現地）",
+      "source": "入力画面!BO46",
+      "properties": [
+        {
+          "cell": "BN46",
+          "text": "38"
+        },
+        {
+          "cell": "BO46",
+          "text": "内容（現地）"
+        },
+        {
+          "cell": "BP46",
+          "text": "×"
+        },
+        {
+          "cell": "BQ46",
+          "text": "×"
+        },
+        {
+          "cell": "BR46",
+          "text": "×"
+        },
+        {
+          "cell": "BS46",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT46",
+          "text": "ー"
+        },
+        {
+          "cell": "BV46",
+          "text": "タブ名固定文言：内容（現地）"
+        },
+        {
+          "cell": "BW46",
+          "text": "ー"
+        },
+        {
+          "cell": "BX46",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ46",
+          "text": "稟議内容（現地）➡「内容（現地）」へ変更"
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "name": "件名",
+      "source": "入力画面!BO47",
+      "properties": [
+        {
+          "cell": "BN47",
+          "text": "39"
+        },
+        {
+          "cell": "BO47",
+          "text": "件名"
+        },
+        {
+          "cell": "BP47",
+          "text": "×"
+        },
+        {
+          "cell": "BQ47",
+          "text": "×"
+        },
+        {
+          "cell": "BR47",
+          "text": "×"
+        },
+        {
+          "cell": "BS47",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT47",
+          "text": "256"
+        },
+        {
+          "cell": "BW47",
+          "text": "ー"
+        },
+        {
+          "cell": "BX47",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "name": "稟議内容添付",
+      "source": "入力画面!BO48",
+      "properties": [
+        {
+          "cell": "BN48",
+          "text": "40"
+        },
+        {
+          "cell": "BO48",
+          "text": "稟議内容添付"
+        },
+        {
+          "cell": "BP48",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ48",
+          "text": "〇"
+        },
+        {
+          "cell": "BR48",
+          "text": "×"
+        },
+        {
+          "cell": "BS48",
+          "text": "ファイルアップロード"
+        },
+        {
+          "cell": "BT48",
+          "text": "ー"
+        },
+        {
+          "cell": "BV48",
+          "text": "推奨サイズは 1600×968ピクセルとする"
+        }
+      ]
+    },
+    {
+      "number": 41,
+      "name": "金額（現地）",
+      "source": "入力画面!BO49",
+      "properties": [
+        {
+          "cell": "BN49",
+          "text": "41"
+        },
+        {
+          "cell": "BO49",
+          "text": "金額（現地）"
+        },
+        {
+          "cell": "BP49",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ49",
+          "text": "〇"
+        },
+        {
+          "cell": "BR49",
+          "text": "×"
+        },
+        {
+          "cell": "BS49",
+          "text": "数値入力（フォーマット）"
+        },
+        {
+          "cell": "BT49",
+          "text": "16"
+        },
+        {
+          "cell": "BW49",
+          "text": "ー"
+        },
+        {
+          "cell": "BX49",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "name": "税種別（現地）",
+      "source": "入力画面!BO50",
+      "properties": [
+        {
+          "cell": "BN50",
+          "text": "42"
+        },
+        {
+          "cell": "BO50",
+          "text": "税種別（現地）"
+        },
+        {
+          "cell": "BP50",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ50",
+          "text": "〇"
+        },
+        {
+          "cell": "BR50",
+          "text": "×"
+        },
+        {
+          "cell": "BS50",
+          "text": "プルダウン"
+        },
+        {
+          "cell": "BT50",
+          "text": "ー"
+        },
+        {
+          "cell": "BV50",
+          "text": "デフォルトで「税込」が指定されているが３つの値から選択可能\n1,税抜、2,税込、３,非課税"
+        },
+        {
+          "cell": "BW50",
+          "text": "ー"
+        },
+        {
+          "cell": "BX50",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "name": "通貨",
+      "source": "入力画面!BO51",
+      "properties": [
+        {
+          "cell": "BN51",
+          "text": "43"
+        },
+        {
+          "cell": "BO51",
+          "text": "通貨"
+        },
+        {
+          "cell": "BP51",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ51",
+          "text": "〇"
+        },
+        {
+          "cell": "BR51",
+          "text": "×"
+        },
+        {
+          "cell": "BS51",
+          "text": "プルダウン"
+        },
+        {
+          "cell": "BT51",
+          "text": "ー"
+        },
+        {
+          "cell": "BV51",
+          "text": "マスタ名：com_master_008_rta001\nカラム名：currency_codeから自動取得し表示"
+        },
+        {
+          "cell": "BW51",
+          "text": "ー"
+        },
+        {
+          "cell": "BX51",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 44,
+      "name": "金額（日本円）",
+      "source": "入力画面!BO52",
+      "properties": [
+        {
+          "cell": "BN52",
+          "text": "44"
+        },
+        {
+          "cell": "BO52",
+          "text": "金額（日本円）"
+        },
+        {
+          "cell": "BP52",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ52",
+          "text": "〇"
+        },
+        {
+          "cell": "BR52",
+          "text": "×"
+        },
+        {
+          "cell": "BS52",
+          "text": "数値入力（フォーマット）"
+        },
+        {
+          "cell": "BT52",
+          "text": "16"
+        },
+        {
+          "cell": "BW52",
+          "text": "ー"
+        },
+        {
+          "cell": "BX52",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "name": "税種別（日本）",
+      "source": "入力画面!BO53",
+      "properties": [
+        {
+          "cell": "BN53",
+          "text": "45"
+        },
+        {
+          "cell": "BO53",
+          "text": "税種別（日本）"
+        },
+        {
+          "cell": "BP53",
+          "text": "〇"
+        },
+        {
+          "cell": "BQ53",
+          "text": "〇"
+        },
+        {
+          "cell": "BR53",
+          "text": "×"
+        },
+        {
+          "cell": "BS53",
+          "text": "プルダウン"
+        },
+        {
+          "cell": "BT53",
+          "text": "ー"
+        },
+        {
+          "cell": "BV53",
+          "text": "デフォルトで「税込」が指定されているが３つの値から選択可能\n1,税抜、2,税込、３,非課税"
+        },
+        {
+          "cell": "BW53",
+          "text": "ー"
+        },
+        {
+          "cell": "BX53",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "name": "通貨",
+      "source": "入力画面!BO54",
+      "properties": [
+        {
+          "cell": "BN54",
+          "text": "46"
+        },
+        {
+          "cell": "BO54",
+          "text": "通貨"
+        },
+        {
+          "cell": "BP54",
+          "text": "×"
+        },
+        {
+          "cell": "BQ54",
+          "text": "×"
+        },
+        {
+          "cell": "BR54",
+          "text": "×"
+        },
+        {
+          "cell": "BS54",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT54",
+          "text": "ー"
+        },
+        {
+          "cell": "BV54",
+          "text": "固定文言：JPY"
+        },
+        {
+          "cell": "BW54",
+          "text": "ー"
+        },
+        {
+          "cell": "BX54",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "name": "内容（日本）",
+      "source": "入力画面!BO55",
+      "properties": [
+        {
+          "cell": "BN55",
+          "text": "47"
+        },
+        {
+          "cell": "BO55",
+          "text": "内容（日本）"
+        },
+        {
+          "cell": "BP55",
+          "text": "×"
+        },
+        {
+          "cell": "BQ55",
+          "text": "×"
+        },
+        {
+          "cell": "BR55",
+          "text": "×"
+        },
+        {
+          "cell": "BS55",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT55",
+          "text": "ー"
+        },
+        {
+          "cell": "BV55",
+          "text": "タブ名固定文言：内容（日本）"
+        },
+        {
+          "cell": "BW55",
+          "text": "ー"
+        },
+        {
+          "cell": "BX55",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ55",
+          "text": "稟議件名（日本）➡「内容（日本）」へ変更"
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "name": "件名",
+      "source": "入力画面!BO56",
+      "properties": [
+        {
+          "cell": "BN56",
+          "text": "48"
+        },
+        {
+          "cell": "BO56",
+          "text": "件名"
+        },
+        {
+          "cell": "BP56",
+          "text": "×"
+        },
+        {
+          "cell": "BQ56",
+          "text": "×"
+        },
+        {
+          "cell": "BR56",
+          "text": "×"
+        },
+        {
+          "cell": "BS56",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT56",
+          "text": "ー"
+        },
+        {
+          "cell": "BV56",
+          "text": "申請時は押下不可"
+        },
+        {
+          "cell": "BW56",
+          "text": "ー"
+        },
+        {
+          "cell": "BX56",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 49,
+      "name": "稟議内容添付",
+      "source": "入力画面!BO57",
+      "properties": [
+        {
+          "cell": "BN57",
+          "text": "49"
+        },
+        {
+          "cell": "BO57",
+          "text": "稟議内容添付"
+        },
+        {
+          "cell": "BP57",
+          "text": "×"
+        },
+        {
+          "cell": "BQ57",
+          "text": "×"
+        },
+        {
+          "cell": "BR57",
+          "text": "×"
+        },
+        {
+          "cell": "BS57",
+          "text": "ファイルアップロード"
+        },
+        {
+          "cell": "BT57",
+          "text": "ー"
+        },
+        {
+          "cell": "BV57",
+          "text": "申請時は押下不可"
+        },
+        {
+          "cell": "BW57",
+          "text": "ー"
+        },
+        {
+          "cell": "BX57",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "name": "ここをクリックしてファイルを選択",
+      "source": "入力画面!BO58",
+      "properties": [
+        {
+          "cell": "BN58",
+          "text": "50"
+        },
+        {
+          "cell": "BO58",
+          "text": "ここをクリックしてファイルを選択"
+        },
+        {
+          "cell": "BP58",
+          "text": "×"
+        },
+        {
+          "cell": "BQ58",
+          "text": "×"
+        },
+        {
+          "cell": "BR58",
+          "text": "×"
+        },
+        {
+          "cell": "BS58",
+          "text": "ラベル"
+        },
+        {
+          "cell": "BT58",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 51,
+      "name": "関係者",
+      "source": "入力画面!BO59",
+      "properties": [
+        {
+          "cell": "BN59",
+          "text": "51"
+        },
+        {
+          "cell": "BO59",
+          "text": "関係者"
+        },
+        {
+          "cell": "BP59",
+          "text": "×"
+        },
+        {
+          "cell": "BQ59",
+          "text": "×"
+        },
+        {
+          "cell": "BR59",
+          "text": "×"
+        },
+        {
+          "cell": "BS59",
+          "text": "共通-関係者"
+        },
+        {
+          "cell": "BT59",
+          "text": "ー"
+        },
+        {
+          "cell": "BV59",
+          "text": "各社承認者マスタから自動取得、申請時は押下不可\n説明文は下記の通りで表示\n------------------------------------------\n１．関係者の承認は、担当者担当承認後から可能です。\n２．関係者全員の承認が完了しないと、本部長が承認をすることができません。\n３．関係者の変更は、自分の承認時のみ可能です。"
+        },
+        {
+          "cell": "BW59",
+          "text": "ー"
+        },
+        {
+          "cell": "BX59",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ59",
+          "text": "現在は申請者が関係者を追加できてしまうため修正が必要"
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "name": "共有先",
+      "source": "入力画面!BO60",
+      "properties": [
+        {
+          "cell": "BN60",
+          "text": "52"
+        },
+        {
+          "cell": "BO60",
+          "text": "共有先"
+        },
+        {
+          "cell": "BP60",
+          "text": "×"
+        },
+        {
+          "cell": "BQ60",
+          "text": "×"
+        },
+        {
+          "cell": "BR60",
+          "text": "×"
+        },
+        {
+          "cell": "BS60",
+          "text": "共通-共有者"
+        },
+        {
+          "cell": "BT60",
+          "text": "ー"
+        },
+        {
+          "cell": "BV60",
+          "text": "各社承認者マスタから自動取得、申請時は押下不可"
+        },
+        {
+          "cell": "BW60",
+          "text": "ー"
+        },
+        {
+          "cell": "BX60",
+          "text": "ー"
+        },
+        {
+          "cell": "BZ60",
+          "text": "現在は申請者が共有者を追加できてしまうため修正が必要"
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "name": "決裁者コメント",
+      "source": "入力画面!BO61",
+      "properties": [
+        {
+          "cell": "BN61",
+          "text": "53"
+        },
+        {
+          "cell": "BO61",
+          "text": "決裁者コメント"
+        },
+        {
+          "cell": "BP61",
+          "text": "×"
+        },
+        {
+          "cell": "BQ61",
+          "text": "×"
+        },
+        {
+          "cell": "BR61",
+          "text": "×"
+        },
+        {
+          "cell": "BS61",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT61",
+          "text": "ー"
+        },
+        {
+          "cell": "BV61",
+          "text": "申請時は押下不可"
+        },
+        {
+          "cell": "BW61",
+          "text": "ー"
+        },
+        {
+          "cell": "BX61",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "name": "担当役員コメント",
+      "source": "入力画面!BO62",
+      "properties": [
+        {
+          "cell": "BN62",
+          "text": "54"
+        },
+        {
+          "cell": "BO62",
+          "text": "担当役員コメント"
+        },
+        {
+          "cell": "BP62",
+          "text": "×"
+        },
+        {
+          "cell": "BQ62",
+          "text": "×"
+        },
+        {
+          "cell": "BR62",
+          "text": "×"
+        },
+        {
+          "cell": "BS62",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT62",
+          "text": "ー"
+        },
+        {
+          "cell": "BV62",
+          "text": "申請時は押下不可"
+        },
+        {
+          "cell": "BW62",
+          "text": "ー"
+        },
+        {
+          "cell": "BX62",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "name": "関係者コメント",
+      "source": "入力画面!BO63",
+      "properties": [
+        {
+          "cell": "BN63",
+          "text": "55"
+        },
+        {
+          "cell": "BO63",
+          "text": "関係者コメント"
+        },
+        {
+          "cell": "BP63",
+          "text": "×"
+        },
+        {
+          "cell": "BQ63",
+          "text": "×"
+        },
+        {
+          "cell": "BR63",
+          "text": "×"
+        },
+        {
+          "cell": "BS63",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT63",
+          "text": "ー"
+        },
+        {
+          "cell": "BV63",
+          "text": "申請時は押下不可"
+        },
+        {
+          "cell": "BW63",
+          "text": "ー"
+        },
+        {
+          "cell": "BX63",
+          "text": "ー"
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "name": "承認者コメント",
+      "source": "入力画面!BO64",
+      "properties": [
+        {
+          "cell": "BN64",
+          "text": "56"
+        },
+        {
+          "cell": "BO64",
+          "text": "承認者コメント"
+        },
+        {
+          "cell": "BP64",
+          "text": "×"
+        },
+        {
+          "cell": "BQ64",
+          "text": "×"
+        },
+        {
+          "cell": "BR64",
+          "text": "×"
+        },
+        {
+          "cell": "BS64",
+          "text": "テキスト入力"
+        },
+        {
+          "cell": "BT64",
+          "text": "ー"
+        },
+        {
+          "cell": "BV64",
+          "text": "申請時は押下不可"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "sheet": "入力画面",
+      "imageId": 0,
+      "file": "expected-0.png",
+      "topLeft": {
+        "nativeCol": 77,
+        "nativeColOff": 787969,
+        "nativeRow": 0,
+        "nativeRowOff": 0
+      },
+      "bottomRight": {
+        "nativeCol": 77,
+        "nativeColOff": 2651979,
+        "nativeRow": 3,
+        "nativeRowOff": 88029
+      }
+    },
+    {
+      "sheet": "入力画面",
+      "imageId": 1,
+      "file": "expected-1.png",
+      "topLeft": {
+        "nativeCol": 4,
+        "nativeColOff": 67236,
+        "nativeRow": 9,
+        "nativeRowOff": 201707
+      },
+      "bottomRight": {
+        "nativeCol": 55,
+        "nativeColOff": 155034,
+        "nativeRow": 93,
+        "nativeRowOff": 316380
+      }
+    },
+    {
+      "sheet": "Actual",
+      "imageId": 3,
+      "file": "actual-3.png",
+      "topLeft": {
+        "nativeCol": 0,
+        "nativeColOff": 0,
+        "nativeRow": 1,
+        "nativeRowOff": 0
+      },
+      "bottomRight": {
+        "nativeCol": 21,
+        "nativeColOff": 417580,
+        "nativeRow": 43,
+        "nativeRowOff": 85725
+      }
+    },
+    {
+      "sheet": "Actual",
+      "imageId": 2,
+      "file": "actual-2.png",
+      "topLeft": {
+        "nativeCol": 0,
+        "nativeColOff": 1,
+        "nativeRow": 43,
+        "nativeRowOff": 47625
+      },
+      "bottomRight": {
+        "nativeCol": 21,
+        "nativeColOff": 304801,
+        "nativeRow": 90,
+        "nativeRowOff": 28575
+      }
+    }
+  ]
+}

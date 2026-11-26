@@ -105,7 +105,12 @@ Với mỗi risk, ghi rõ:
 1. **Ma trận trạng thái** (nếu có state transitions) — bảng mapping trạng thái → hành vi
 2. **Checklist AC** — Tóm tắt tất cả AC dạng checkbox, nhóm theo chức năng
 3. **Khuyến nghị kiểm thử** — Gợi ý top 10 điều cần quan tâm nhất khi test
-4. **Xuất Artifact** — Lưu toàn bộ phân tích vào file `.md`
+4. **Xuất file Markdown** — Lưu toàn bộ phân tích vào file `.md` tại thư mục đích (do user chỉ định)
+5. **Xuất file Excel styled** — Chạy lệnh sau để convert sang Excel có đầy đủ format (header xanh đậm, alternating rows, borders, freeze, autofilter):
+   ```bash
+   node scripts/convert_excel/md_to_xlsx_styled.js <đường_dẫn_file.md> <đường_dẫn_output.xlsx>
+   ```
+   > Script dùng ExcelJS — mỗi bảng Markdown trở thành 1 sheet riêng, tên sheet lấy theo heading `##` gần nhất phía trên.
 
 ## Cấu trúc Output (Template Artifact)
 
@@ -154,6 +159,12 @@ Agent PHẢI xuất artifact theo cấu trúc sau:
 (Danh sách gợi ý, KHÔNG phải test cases)
 ```
 
+> **Sau khi lưu file `.md`**, chạy ngay:
+> ```bash
+> node scripts/convert_excel/md_to_xlsx_styled.js <output.md> <output.xlsx>
+> ```
+> Mỗi section `## N. Tên Section` sẽ thành 1 sheet Excel riêng với đầy đủ styling.
+
 ## Quy tắc quan trọng
 
 - ❌ **KHÔNG sinh test cases** — workflow này chỉ phân tích, không tạo TC
@@ -164,6 +175,8 @@ Agent PHẢI xuất artifact theo cấu trúc sau:
 - ✅ **PHẢI ghi rõ inconsistency** giữa document và mockup
 - ✅ **PHẢI viết bằng Tiếng Việt**, format Markdown, xuất Artifact
 - ✅ **PHẢI copy hình ảnh** vào thư mục artifacts nếu cần embed trong artifact
+- ✅ **PHẢI xuất file Excel** — sau khi lưu `.md`, chạy `scripts/convert_excel/md_to_xlsx_styled.js` để sinh file `.xlsx` cùng thư mục. **KHÔNG dùng** `md_all_tables_to_xlsx.js` hay `md_to_xlsx.js` (không hỗ trợ styling)
+- ✅ **Tên file output** phải theo pattern: `<tên_màn_hình_snake_case>_spec_analysis.md` / `.xlsx`
 
 ## Mối quan hệ với workflows khác
 

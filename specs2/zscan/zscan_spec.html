@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luồng xử lý nghiệp vụ — Quét QR Code (zscan) v3</title>
+<script src="../lib/mermaid.min.js"></script>
+<link rel="stylesheet" href="../../specs/spec-shared.css">
+<link rel="stylesheet" href="../spec2-shared.css">
+</head>
+<body>
+
+<!-- ══ LIGHTBOX ══ -->
+<div id="lb-overlay">
+  <button id="lb-close">×</button>
+  <img id="lb-img" src="" alt="">
+  <div id="lb-caption"></div>
+</div>
+
+<!-- ══ SIDEBAR ══ -->
+<nav id="sidebar">
+  <div class="brand">zscan — QR Code <span class="shot-count">📷 16</span></div>
+  <div id="search-wrap">
+    <input id="search-box" type="text" placeholder="Tìm kiếm… (phím /)">
+  </div>
+  <div class="search-hint">Nhấn <kbd>/</kbd> để focus</div>
+  <div class="nav-section">Tổng quan</div>
+  <a href="#state-matrix">👤 User State Matrix</a>
+  <a href="#overview">📊 Dashboard</a>
+  <a href="#dependency-map">🔗 Điểm vào & luồng kết quả</a>
+  <a href="#diagram-main">📈 Sơ đồ tổng thể</a>
+  <div class="nav-section">Luồng chính</div>
+  <a href="#mode-member">🎫 Chế độ Tích điểm</a>
+  <a href="#mode-waiting">🔢 Chế độ Lấy số thứ tự</a>
+  <div class="nav-section">Hỗ trợ</div>
+  <a href="#camera-perm">📷 Quyền Camera</a>
+  <a href="#errors">⚠️ Bảng thông báo lỗi</a>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main id="main">
+
+  <h1>Luồng xử lý nghiệp vụ — Quét QR Code</h1>
+  <p class="subtitle">Module: zscan &nbsp;|&nbsp; Phiên bản: v3 (bổ sung Dependency Map cross-module) &nbsp;|&nbsp; Cập nhật: 2026-07-02</p>
+
+  <!-- ── User State Matrix ── -->
+  <section id="state-matrix">
+    <h2>👤 User State Matrix</h2>
+    <p>Bảng này liệt kê <strong>mọi tổ hợp trạng thái user × tính năng</strong> để QA không bỏ sót case.</p>
+    <div class="info-box">⚠️ <strong>Miss case phổ biến:</strong> Quét QR tích điểm khi <strong>chưa đăng nhập</strong> — không crash, chỉ hiện popup. Cần test riêng.</div>
+    <table>
+      <thead>
+        <tr><th>Tính năng</th><th>Chưa đăng nhập</th><th>Đã đăng nhập</th><th>Ghi chú</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mở màn hình QR (cả 2 chế độ)</td>
+          <td><span class="badge badge-success">✅ Hoạt động</span></td>
+          <td><span class="badge badge-success">✅ Hoạt động</span></td>
+          <td>Không cần auth để mở camera</td>
+        </tr>
+        <tr>
+          <td>Quét QR tích điểm → kết quả</td>
+          <td><span class="badge badge-warning">⚠️ Popup đăng nhập</span></td>
+          <td><span class="badge badge-success">✅ Gọi API</span></td>
+          <td><span class="ja">この機能はログイン後に使用できるようになります。</span></td>
+        </tr>
+        <tr>
+          <td>Gọi API tích điểm</td>
+          <td><span class="badge badge-danger">❌ Không gọi</span></td>
+          <td><span class="badge badge-success">✅</span></td>
+          <td>Token chưa có — block ở client trước khi gọi</td>
+        </tr>
+        <tr>
+          <td>Quét QR số thứ tự → lấy số</td>
+          <td><span class="badge badge-success">✅ Hoạt động</span></td>
+          <td><span class="badge badge-success">✅ Hoạt động</span></td>
+          <td>API không cần auth</td>
+        </tr>
+        <tr>
+          <td>Xem / kiểm tra vé chờ đang có</td>
+          <td><span class="badge badge-success">✅</span></td>
+          <td><span class="badge badge-success">✅</span></td>
+          <td>State local, không cần auth</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Dashboard ── -->
+  <section id="overview">
+    <div class="tiles">
+      <div class="tile blue"><div class="num">2</div><div class="lbl">Chế độ hoạt động</div></div>
+      <div class="tile orange"><div class="num">10</div><div class="lbl">Loại lỗi khác nhau</div></div>
+      <div class="tile green"><div class="num">3</div><div class="lbl">Trạng thái camera</div></div>
+      <div class="tile red"><div class="num">16</div><div class="lbl">Screenshots tài liệu</div></div>
+    </div>
+    <p>
+      Màn hình quét QR code dùng camera để nhận diện mã vạch 2D, hỗ trợ hai chế độ
+      tùy theo cách người dùng vào màn hình:
+    </p>
+    <table>
+      <thead><tr><th>Chế độ</th><th>Người dùng vào từ đâu</th><th>Tiêu đề màn hình</th><th>Mục đích</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Lấy số thứ tự</strong></td>
+          <td>Màn hình chính (Home)</td>
+          <td><span class="ja">QR読み取り</span> <span class="vi-trans">— Đọc QR</span></td>
+          <td>Quét QR phiếu chờ để lấy số thứ tự — <strong>hoặc</strong> quét QR hóa đơn để tích điểm (tự động nhận diện theo nội dung mã, không giới hạn chỉ 1 loại)</td>
+        </tr>
+        <tr>
+          <td><strong>Tích điểm</strong></td>
+          <td>Menu thành viên / tab Hạng</td>
+          <td><span class="ja">会員証</span> <span class="vi-trans">— Thẻ thành viên</span></td>
+          <td>Quét QR trên hóa đơn để tích điểm / nâng hạng — <strong>chỉ</strong> xử lý tích điểm, không hỗ trợ lấy số thứ tự</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box">⚠️ <strong>Lưu ý dễ hiểu nhầm:</strong> "Lấy số thứ tự" không phải là chế độ tách biệt hoàn toàn với "Tích điểm" — vào từ Home vẫn quét được QR tích điểm bình thường (hệ thống tự nhận diện QR là loại nào). Ngược lại, vào từ Menu thành viên/tab Hạng thì CHỈ xử lý được tích điểm, dù có quét nhầm QR phiếu chờ cũng không nhận.</div>
+
+    <h3>Màn hình khởi đầu</h3>
+    <div class="steps">
+      <div class="step">
+        <p>App khởi động — màn hình Home hiển thị trước khi người dùng vào chức năng quét.</p>
+        <figure class="step-shot" data-filename="scan_home_initial.png">
+          <img src="res/scan_home_initial.png" alt="Màn hình Home — trước khi vào QR scan" loading="lazy">
+          <figcaption>Home — điểm xuất phát</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Dependency Map ── -->
+  <section id="dependency-map">
+    <h2>🔗 Điểm vào &amp; luồng xử lý kết quả</h2>
+    <p>Màn hình quét QR có <strong>2 cách để mở</strong>: từ Home, hoặc từ tab Hạng thành viên (Rank). Đây là <strong>cùng một màn hình quét</strong>, nhưng sau khi quét xong, <strong>nơi nhận và xử lý kết quả lại khác nhau</strong> tùy theo lúc đó người dùng mở từ đâu. Đây là điểm quan trọng khi test vì cùng một tình huống lỗi có thể dẫn tới trải nghiệm khác nhau.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    H1[🏠 Bấm icon Quét QR trên Home] --> S[📷 Màn hình quét QR]
+    H2[🔔 Bấm thông báo đẩy / mở link] --> S
+    R1[🎫 Bấm thẻ thành viên ở tab Hạng] --> S
+    S --> Q{Quét xong, kết quả trả về đâu?}
+    Q -- Vào từ Home / thông báo --> RH["Trả kết quả về Home:<br>hiện banner số đang chờ, chuyển sang<br>màn hình kết quả tích điểm, hoặc<br>màn hình sau đăng nhập / khảo sát"]
+    Q -- Vào từ tab Hạng --> RR["Trả kết quả về tab Hạng:<br>chỉ cập nhật lại điểm/hạng,<br>KHÔNG hiện thông báo gì thêm"]
+      </div>
+      <p class="mermaid-note">Cùng 1 màn hình quét QR, nhưng nơi nhận &amp; xử lý kết quả khác nhau tùy điểm vào.</p>
+    </div>
+
+    <table>
+      <thead><tr><th>Điểm vào</th><th>Cách người dùng thực hiện</th><th>Nơi xử lý kết quả sau khi quét xong</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Từ Home</td>
+          <td>Bấm icon Quét QR ở màn hình chính</td>
+          <td>Màn hình chính (Home) — hiện banner số thứ tự đang chờ (nếu là lấy số), hoặc chuyển sang màn hình kết quả tích điểm</td>
+        </tr>
+        <tr>
+          <td>Từ thông báo đẩy / deep link</td>
+          <td>Bấm vào thông báo hoặc đường link được gửi đến máy</td>
+          <td>Giống hệt "Từ Home" ở trên</td>
+        </tr>
+        <tr>
+          <td>Từ tab Hạng thành viên (Rank)</td>
+          <td>Bấm vào thẻ thành viên trong tab Hạng</td>
+          <td>Tab Hạng thành viên — chỉ tự làm mới lại thông tin điểm/hạng, <strong>không hiện thông báo hay dialog nào khác</strong>, kể cả khi quét xong cần đăng nhập lại</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">⚠️ <strong>Lưu ý quan trọng cho QA:</strong> khi test các kịch bản "phiên đăng nhập vừa hết hạn lúc quét" hoặc "quét xong cần đăng nhập thêm", <strong>kết quả sẽ khác nhau tùy vào việc mở màn hình quét từ Home hay từ tab Hạng</strong> — vào từ tab Hạng sẽ KHÔNG hiện bất kỳ thông báo nào, chỉ tự làm mới lại điểm/hạng phía sau.</div>
+    <div class="info-box">⚠️ <strong>Vào từ Home/thông báo — mất mạng đúng lúc quét xong:</strong> nếu thiết bị mất kết nối mạng ngay tại thời điểm màn hình quét đóng lại để trả kết quả, hệ thống chỉ hiện thông báo "không có kết nối" và <strong>không xử lý kết quả vừa quét</strong> (không hiện banner số chờ, không chuyển màn hình kết quả). Cần test riêng scenario mất mạng đúng thời điểm này.</div>
+  </section>
+
+  <!-- ── Diagram tổng thể ── -->
+  <section id="diagram-main">
+    <h2>Sơ đồ luồng tổng thể</h2>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    A([Mở màn hình quét QR]) --> B{Đã cấp quyền camera?}
+    B -- Chưa --> C[Hiển thị màn hình xin quyền]
+    C --> D{Người dùng chọn?}
+    D -- Từ chối --> E[Nút mở Cài đặt hệ thống]
+    D -- Đồng ý --> F[Camera khởi động]
+    B -- Rồi --> F
+    F --> G{Chế độ hoạt động?}
+    G -- Tích điểm --> H[Hướng dẫn: quét QR hóa đơn]
+    G -- Lấy số thứ tự --> I[Hướng dẫn: quét QR phiếu chờ]
+    H --> J[Camera phân tích liên tục]
+    I --> J
+    J --> K{Nhận diện được QR?}
+    K -- Chưa --> J
+    K -- Rồi --> L[Phát beep + rung]
+    L --> M{Nội dung QR thuộc loại nào?}
+    M -- QR hóa đơn tích điểm --> N[Xử lý tích điểm]
+    M -- QR số thứ tự --> O[Xử lý lấy số thứ tự]
+    M -- Không hợp lệ --> P[Hiển thị thông báo lỗi]
+    P --> Q[Camera restart sau 1 giây]
+    Q --> J
+    N --> R{Thành công?}
+    R -- Có --> S([Đóng màn hình, trả kết quả])
+    R -- Không --> T[Popup lỗi + Retry / Hủy]
+    T --> J
+    O --> U{Thành công?}
+    U -- Có --> S
+    U -- Không --> P
+      </div>
+    </div>
+
+    <h3>Sơ đồ trạng thái màn hình</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+stateDiagram-v2
+    [*] --> KiemTraQuyen : Mở màn hình
+    KiemTraQuyen --> ChuaCapQuyen : Chưa có quyền camera
+    KiemTraQuyen --> CameraHoatDong : Đã có quyền
+    ChuaCapQuyen --> CameraHoatDong : Người dùng cấp quyền
+    ChuaCapQuyen --> ChoCapQuyen : Mở Cài đặt hệ thống
+    ChoCapQuyen --> KiemTraQuyen : Quay lại app
+    CameraHoatDong --> DangQuet : Camera sẵn sàng
+    DangQuet --> NhanDienQR : Phát hiện mã QR
+    NhanDienQR --> XuLyTichDiem : QR hóa đơn hợp lệ
+    NhanDienQR --> XuLySoThuTu : QR số thứ tự hợp lệ
+    NhanDienQR --> HienThiLoi : QR không hợp lệ
+    XuLyTichDiem --> GoiAPI : Đã đăng nhập
+    XuLyTichDiem --> YeuCauDangNhap : Chưa đăng nhập
+    GoiAPI --> [*] : API thành công
+    GoiAPI --> HienThiLoi : API lỗi
+    XuLySoThuTu --> [*] : Hợp lệ, trả kết quả
+    XuLySoThuTu --> HienThiLoi : Không hợp lệ
+    HienThiLoi --> DangQuet : Đóng popup (1 giây)
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CHẾ ĐỘ TÍCH ĐIỂM ══ -->
+  <section id="mode-member">
+    <h2>🎫 Chế độ Tích điểm — Quét hóa đơn</h2>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div> Thành công</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div> Lỗi / Từ chối</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--warning)"></div> Cần xử lý thêm</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--info)"></div> Trung gian</div>
+    </div>
+
+    <h3>Luồng thành công <span class="shot-count">📷 3 ảnh</span></h3>
+    <div class="steps">
+      <div class="step">
+        <p>Người dùng mở màn hình từ menu thành viên. Tiêu đề hiển thị: <span class="ja">会員証</span> <span class="vi-trans">(Thẻ thành viên)</span>. Hướng dẫn: <span class="ja">レシートのQRコードを読み取ってください</span> <span class="vi-trans">(Vui lòng quét mã QR trên hóa đơn)</span>.</p>
+        <figure class="step-shot" data-filename="scan_mode_member_title.png">
+          <img src="res/scan_mode_member_title.png" alt="Màn hình tích điểm — tiêu đề 会員証" loading="lazy">
+          <figcaption>Tiêu đề 会員証 hiển thị ở trên cùng</figcaption>
+        </figure>
+      </div>
+      <div class="step">
+        <p>Camera tự động khởi động, hiển thị khung ngắm QR ở trung tâm màn hình.</p>
+        <figure class="step-shot" data-filename="scan_qr_scanning.png">
+          <img src="res/scan_qr_scanning.png" alt="Camera đang hoạt động — khung ngắm QR" loading="lazy">
+          <figcaption>Khung ngắm QR — camera đang phân tích</figcaption>
+        </figure>
+      </div>
+      <div class="step">
+        <p>Người dùng đưa hóa đơn vào vùng khung ngắm. Camera liên tục phân tích hình ảnh.</p>
+      </div>
+      <div class="step">
+        <p>Hệ thống nhận diện mã QR hợp lệ → <strong>phát tiếng beep + thiết bị rung</strong> ngay lập tức. Camera dừng phân tích để tránh quét nhiều lần.</p>
+      </div>
+      <div class="step">
+        <p>Kiểm tra trạng thái đăng nhập. Nếu đã đăng nhập → hệ thống tự động gửi thông tin lên máy chủ để xử lý điểm.</p>
+      </div>
+      <div class="step">
+        <p>Máy chủ xác nhận thành công và trả về thông tin điểm/hạng thành viên. Màn hình tự đóng và chuyển về màn hình kết quả.</p>
+        <figure class="step-shot" data-filename="scan_result_rankup_success.png" data-capture="manual">
+          <img src="res/scan_result_rankup_success.png" alt="Kết quả tích điểm thành công" loading="lazy">
+          <figcaption>Màn hình kết quả — tích điểm thành công</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <h3>Sơ đồ validate QR tích điểm</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Nhận chuỗi QR] --> B{Chuỗi rỗng?}
+    B -- Có --> ERR1[❌ Lỗi: mã QR không hợp lệ]
+    B -- Không --> C{Bắt đầu bằng 'RJP'?}
+    C -- Không --> ERR2[❌ Lỗi: mã QR không hợp lệ chung]
+    C -- Có --> D{Độ dài ≤ 71 ký tự?}
+    D -- Không --> ERR3[❌ Lỗi: mã QR không hợp lệ]
+    D -- Có --> E{Đã đăng nhập?}
+    E -- Chưa --> F[⚠️ Popup yêu cầu đăng nhập]
+    E -- Rồi --> G[✅ Gọi API tích điểm]
+    G --> H{API trả về?}
+    H -- 200 + có dữ liệu --> I[✅ Đóng màn hình, trả kết quả]
+    H -- 200 + không có dữ liệu --> ERR4[❌ Popup lỗi + Retry/Hủy]
+    H -- 500 / -108 --> ERR5[❌ Popup lỗi server + Retry/Hủy]
+    H -- 503 --> ERR6[❌ Popup lỗi tạm thời + Retry/Hủy]
+    H -- Lỗi khác --> ERR7[❌ Popup lỗi + Retry/Hủy]
+    H -- Không có mạng --> ERR8[❌ Popup lỗi mạng + Retry/Hủy]
+    H -- 401 --> ERR9[⚠️ Lỗi chung, KHÔNG tự nav login]
+      </div>
+    </div>
+
+    <h3>Bảng quy tắc trạng thái — Chế độ tích điểm</h3>
+    <div class="shot-gallery">
+      <figure data-filename="scan_result_rankup_error_invalid.png" data-capture="manual">
+        <img src="res/scan_result_rankup_error_invalid.png" alt="Popup lỗi QR không hợp lệ" loading="lazy">
+        <figcaption>Lỗi: QR không phải của Kyubeeya</figcaption>
+      </figure>
+      <figure data-filename="scan_result_rankup_error_toolong.png" data-capture="manual">
+        <img src="res/scan_result_rankup_error_toolong.png" alt="Popup lỗi QR dài > 71 ký tự" loading="lazy">
+        <figcaption>Lỗi: hóa đơn không hợp lệ (>71 ký tự)</figcaption>
+      </figure>
+      <figure data-filename="scan_result_rankup_error_auth.png" data-capture="manual">
+        <img src="res/scan_result_rankup_error_auth.png" alt="Popup yêu cầu đăng nhập" loading="lazy">
+        <figcaption>Yêu cầu đăng nhập — nút Đóng / Đăng nhập</figcaption>
+      </figure>
+      <figure data-filename="scan_result_rankup_error_network.png" data-capture="manual">
+        <img src="res/scan_result_rankup_error_network.png" alt="Popup lỗi mạng" loading="lazy">
+        <figcaption>Lỗi mạng — nút Retry / Hủy</figcaption>
+      </figure>
+      <figure data-filename="scan_result_rankup_error_server.png" data-capture="manual">
+        <img src="res/scan_result_rankup_error_server.png" alt="Popup lỗi server 500/503" loading="lazy">
+        <figcaption>Lỗi server — nút Retry / Hủy</figcaption>
+      </figure>
+    </div>
+
+    <table>
+      <thead><tr><th>Tình huống</th><th>Thông báo hiển thị</th><th>Hành động tiếp theo</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>QR hợp lệ, đã đăng nhập, API thành công</td>
+          <td><span class="badge badge-success">Thành công</span> Không có popup — tự đóng</td>
+          <td>Chuyển sang màn hình kết quả điểm</td>
+        </tr>
+        <tr>
+          <td>Chưa đăng nhập</td>
+          <td><span class="ja">この機能はログイン後に使用できるようになります。</span><br><span class="vi-trans">Tính năng này chỉ sử dụng được sau khi đăng nhập.</span><br>Nút: <span class="ja">閉じる</span> (Đóng) · <span class="ja">ログイン</span> (Đăng nhập)</td>
+          <td>Đóng → camera tiếp tục. Đăng nhập → mở màn hình đăng nhập</td>
+        </tr>
+        <tr>
+          <td>QR không bắt đầu bằng "RJP", hoặc rỗng</td>
+          <td><span class="ja">久兵衛屋で発行したQRコードを読取ってください。</span><br><span class="vi-trans">Vui lòng quét mã QR do Kyubeeya phát hành.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+        <tr>
+          <td>QR bắt đầu bằng "RJP" nhưng dài hơn 71 ký tự</td>
+          <td><span class="ja">久兵衛屋で発行されたレシートのみ有効です。</span><br><span class="vi-trans">Chỉ có hóa đơn do Kyubeeya phát hành mới hợp lệ.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+        <tr>
+          <td>Không có kết nối mạng</td>
+          <td><span class="ja">端末がインターネットに接続されていません。接続状況を確認してください。</span><br><span class="vi-trans">Thiết bị không kết nối internet. Vui lòng kiểm tra kết nối.</span><br>Nút: <span class="ja">リトライ</span> (Retry) · <span class="ja">キャンセル</span> (Hủy)</td>
+          <td>Retry → gửi lại; Hủy → camera tiếp tục</td>
+        </tr>
+        <tr>
+          <td>Lỗi máy chủ 503</td>
+          <td><span class="ja">サーバー側で一時的に不具合が発生しています。しばらく時間をおいてから再度お試しください。</span><br><span class="vi-trans">Máy chủ đang gặp sự cố tạm thời. Vui lòng thử lại sau.</span></td>
+          <td>Retry / Hủy</td>
+        </tr>
+        <tr>
+          <td>Lỗi máy chủ 500 / -108</td>
+          <td>Thông báo lỗi cụ thể từ máy chủ (nếu có)</td>
+          <td>Retry / Hủy</td>
+        </tr>
+        <tr>
+          <td>API status 200 nhưng không có dữ liệu điểm</td>
+          <td><span class="ja">エラー</span> <span class="vi-trans">(Lỗi)</span> — thông báo mặc định</td>
+          <td>Retry / Hủy</td>
+        </tr>
+        <tr>
+          <td>Phiên đăng nhập hết hạn ngay giữa lúc quét (server trả lỗi 401)</td>
+          <td><span class="ja">エラー</span> <span class="vi-trans">(Lỗi)</span> — thông báo lỗi chung, vì trường hợp này hệ thống hiện chưa xử lý riêng. Nếu server có gửi kèm nội dung thông báo cụ thể thì sẽ hiện nội dung đó thay vì thông báo chung</td>
+          <td>OK → camera quét lại tiếp. <strong>Không</strong> tự mở màn hình đăng nhập (khác với trường hợp "chưa đăng nhập" ở trên)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="qa-box">
+      <div class="qa-title">✅ Điểm QA cần lưu ý — Chế độ tích điểm</div>
+      <ul>
+        <li>Khi điện thoại ở chế độ im lặng: <strong>beep không phát</strong> nhưng rung vẫn hoạt động — cần test riêng 2 trường hợp.</li>
+        <li>QR có chứa nhiều chuỗi "RJP" (ví dụ URL redirect): hệ thống tách chuỗi theo "amount=" để lấy phần sau — cần test QR có format đặc biệt này.</li>
+        <li>Sau khi đăng nhập từ popup → màn hình quét đóng lại và trả về một loại kết quả đặc biệt (khác kết quả quét bình thường) — hành vi sau đó <strong>khác nhau tùy nơi mở màn hình quét</strong>: vào từ Home → tải lại Home, có thể hiện dialog đăng nhập thành công; vào từ tab Hạng thành viên → chỉ tự làm mới lại điểm/hạng, không có thông báo, <strong>không tự xử lý QR vừa quét</strong> (user phải quét lại).</li>
+        <li>Retry sau lỗi mạng: chỉ gửi lại nếu QR bắt đầu bằng "RJP"; nếu không thì hiển thị lỗi "QR không hợp lệ".</li>
+        <li>Khi quyền camera bị thu hồi trong lúc app chạy nền: màn hình tự đóng khi mở lại, không crash.</li>
+        <li><strong>Phiên đăng nhập hết hạn giữa chừng (401):</strong> khác với case "chưa đăng nhập" ban đầu — không có nút Login, chỉ popup lỗi chung rồi camera quét lại tiếp. Cần test riêng, đừng nhầm với case chưa đăng nhập (Lỗi 5).</li>
+        <li><strong>Mở màn hình quét khi đã logout từ tab Hạng thành viên (Rank):</strong> hệ thống <strong>không</strong> chặn ngay từ bước mở camera — màn hình quét vẫn mở bình thường dù đã logout. Việc từ chối chỉ xảy ra <strong>sau khi quét xong</strong>, khi gửi yêu cầu lên máy chủ (do chưa đăng nhập) → hiện Lỗi 5 (chưa đăng nhập).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ CHẾ ĐỘ LẤY SỐ THỨ TỰ ══ -->
+  <section id="mode-waiting">
+    <h2>🔢 Chế độ Lấy số thứ tự</h2>
+
+    <p>Chế độ này chỉ hoạt động khi được mở từ màn hình chính (Home). Tính năng có thể bị tắt từ cấu hình máy chủ — nếu tắt thì <em>mọi</em> mã QR đều bị từ chối.</p>
+
+    <h3>Luồng thành công <span class="shot-count">📷 2 ảnh</span></h3>
+    <div class="steps">
+      <div class="step">
+        <p>Người dùng mở màn hình từ Home. Tiêu đề: <span class="ja">QR読み取り</span> <span class="vi-trans">(Đọc QR)</span>. Hướng dẫn: <span class="ja">受付札、レシートのQRコードを読み取ってください</span> <span class="vi-trans">(Vui lòng quét QR trên phiếu chờ hoặc hóa đơn)</span>.</p>
+        <figure class="step-shot" data-filename="scan_waiting_home_enabled.png">
+          <img src="res/scan_waiting_home_enabled.png" alt="Màn hình chế độ lấy số thứ tự — tiêu đề QR読み取り" loading="lazy">
+          <figcaption>Tiêu đề QR読み取り — chế độ số thứ tự</figcaption>
+        </figure>
+      </div>
+      <div class="step">
+        <p>Camera khởi động. Người dùng đưa phiếu chờ vào khung ngắm.</p>
+      </div>
+      <div class="step">
+        <p>Hệ thống nhận diện QR → beep + rung. Camera dừng phân tích.</p>
+      </div>
+      <div class="step">
+        <p>Kiểm tra loại QR: nếu URL chứa địa chỉ dịch vụ số thứ tự → tách chuỗi mã (sau "qr=" trong URL).</p>
+      </div>
+      <div class="step">
+        <p>Validate chuỗi mã: kiểm tra độ dài, giải mã nếu cần, xác nhận mã cửa hàng khớp với danh sách cấu hình.</p>
+      </div>
+      <div class="step">
+        <p>Kiểm tra người dùng có đang giữ vé chờ không. Nếu chưa có → đóng màn hình, trả chuỗi mã về màn hình gọi để xử lý đặt số.</p>
+        <figure class="step-shot" data-filename="scan_waiting_result_success.png" data-capture="manual">
+          <img src="res/scan_waiting_result_success.png" alt="Kết quả lấy số thứ tự thành công" loading="lazy">
+          <figcaption>QR hợp lệ — trả kết quả về màn hình gọi</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <h3>Sơ đồ validate QR số thứ tự</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Nhận URL chứa QR số thứ tự] --> B[Tách chuỗi sau 'qr=']
+    B --> C{Tìm thấy 'qr=' trong URL?}
+    C -- Không --> ERR1[❌ QR số thứ tự không hợp lệ]
+    C -- Có --> D{Độ dài ≥ 21 ký tự?}
+    D -- Không --> ERR2[❌ QR quá ngắn]
+    D -- Có --> E{Độ dài 40 hoặc 41 ký tự?}
+    E -- Có --> F[Định dạng cũ — không mã hóa]
+    E -- Không --> G{Độ dài > 41 và bắt đầu bằng 'ZNV'?}
+    G -- Có --> H[Định dạng mới — giải mã trước]
+    G -- Không --> ERR3[❌ Giải mã thất bại]
+    H --> I{Giải mã thành công và độ dài 40/41?}
+    I -- Không --> ERR3
+    I -- Có --> F
+    F --> J[Trích xuất mã cửa hàng]
+    J --> K{Mã cửa hàng trong danh sách cấu hình?}
+    K -- Không --> ERR4[❌ Mã cửa hàng không khớp]
+    K -- Có --> L{Đang có vé chờ?}
+    L -- Có --> ERR5[⚠️ Đã có vé chờ đang hoạt động]
+    L -- Không --> OK[✅ Trả chuỗi QR về màn hình gọi]
+      </div>
+    </div>
+
+    <h3>Bảng quy tắc validate QR số thứ tự</h3>
+    <table>
+      <thead>
+        <tr><th>Độ dài chuỗi (sau <code>qr=</code>)</th><th>Loại</th><th>Xử lý</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&lt; 21 ký tự</td><td>Quá ngắn</td><td>Lỗi — quét phiếu chờ Kyubeeya</td></tr>
+        <tr><td>21–39 ký tự</td><td>Không xác định</td><td>Lỗi — giải mã thất bại</td></tr>
+        <tr><td>40 ký tự</td><td>Cũ, không mã hóa</td><td>Extract brand code tại vị trí 14–21</td></tr>
+        <tr><td>41 ký tự</td><td>Cũ, không mã hóa</td><td>Extract brand code tại vị trí 15–22</td></tr>
+        <tr><td>&gt; 41 ký tự, bắt đầu <code>ZNV</code></td><td>Mới, đã mã hóa</td><td>Giải mã AES → validate lại 40/41 ký tự</td></tr>
+        <tr><td>&gt; 41 ký tự, không có <code>ZNV</code></td><td>Không hợp lệ</td><td>Lỗi — giải mã thất bại</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Bảng quy tắc trạng thái — Lấy số thứ tự</h3>
+    <div class="shot-gallery">
+      <figure data-filename="scan_waiting_error_duplicate.png" data-capture="manual">
+        <img src="res/scan_waiting_error_duplicate.png" alt="Popup lỗi đang có vé chờ" loading="lazy">
+        <figcaption>Đang có vé chờ — không thể lấy thêm</figcaption>
+      </figure>
+      <figure data-filename="scan_waiting_error_feature_off.png" data-capture="manual">
+        <img src="res/scan_waiting_error_feature_off.png" alt="Popup lỗi tính năng bị tắt" loading="lazy">
+        <figcaption>Tính năng bị tắt từ cấu hình</figcaption>
+      </figure>
+    </div>
+
+    <table>
+      <thead><tr><th>Tình huống</th><th>Thông báo hiển thị</th><th>Hành động tiếp theo</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>QR hợp lệ, chưa có vé chờ</td>
+          <td><span class="badge badge-success">Thành công</span> Không popup — tự đóng</td>
+          <td>Màn hình gọi nhận chuỗi QR để đặt số</td>
+        </tr>
+        <tr>
+          <td>Tính năng bị tắt trong cấu hình</td>
+          <td><span class="ja">本QRコードの読取りはサポートされていません。カメラアプリから読取ください。</span><br><span class="vi-trans">Không hỗ trợ đọc mã QR này. Vui lòng dùng ứng dụng camera.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+        <tr>
+          <td>Chuỗi QR &lt; 21 ký tự hoặc giải mã thất bại</td>
+          <td><span class="ja">久兵衛屋で発行した受付札を読取ってください。</span><br><span class="vi-trans">Vui lòng quét phiếu chờ do Kyubeeya phát hành.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+        <tr>
+          <td>Đang có vé chờ còn hiệu lực</td>
+          <td><span class="ja">"待ち組数"はアプリホーム画面でご確認いただけます。</span><br><span class="vi-trans">Có thể xem số nhóm đang chờ trên màn hình chính.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+        <tr>
+          <td>Quét nhầm QR tích điểm (chứa "RJP") trong chế độ này</td>
+          <td>(Không có popup lỗi)</td>
+          <td>Tự động chuyển sang xử lý tích điểm</td>
+        </tr>
+        <tr>
+          <td>QR không liên quan, tính năng tắt</td>
+          <td><span class="ja">本QRコードの読取りはサポートされていません。</span><br><span class="vi-trans">Không hỗ trợ đọc mã QR này.</span></td>
+          <td>Camera restart sau 1 giây</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="qa-box">
+      <div class="qa-title">✅ Điểm QA cần lưu ý — Chế độ lấy số thứ tự</div>
+      <ul>
+        <li><strong>Hai định dạng QR:</strong> 40/41 ký tự (cũ, không mã hóa) và >41 ký tự bắt đầu "ZNV" (mới, AES). Phải test cả hai.</li>
+        <li>Vé chờ "expired" vẫn bị coi là đã có vé → block đặt mới. Test case vé đã hết hạn.</li>
+        <li>Trong chế độ lấy số thứ tự, quét nhầm QR tích điểm → hệ thống xử lý tích điểm luôn, không báo lỗi. Verify behavior cross-mode này.</li>
+        <li>Danh sách mã cửa hàng từ cấu hình — nếu cấu hình rỗng → mọi mã cửa hàng bị từ chối. Test case cấu hình trống.</li>
+        <li><strong>QR rỗng khi tính năng lấy số thứ tự đang bị tắt</strong> (và đang mở từ Home): hệ thống ưu tiên hiển thị popup <strong>"Tính năng bị tắt" (Lỗi 4)</strong> thay vì popup lỗi QR chung — khác với chế độ Tích điểm, nơi QR rỗng luôn báo lỗi chung (Lỗi 1).</li>
+        <li><strong>Camera permission bị từ chối vĩnh viễn</strong>: hành vi giống hệt nhau dù mở từ đâu (bấm icon trên Home hay từ thông báo đẩy) — việc kiểm tra quyền camera không phụ thuộc vào nơi mở màn hình quét.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ CAMERA PERMISSION ══ -->
+  <section id="camera-perm">
+    <h2>📷 Quyền truy cập Camera <span class="shot-count">📷 3 ảnh</span></h2>
+
+    <div class="shot-gallery">
+      <figure data-filename="scan_camera_permission_dialog.png">
+        <img src="res/scan_camera_permission_dialog.png" alt="Dialog xin quyền camera lần đầu" loading="lazy">
+        <figcaption>Dialog hệ thống xin quyền — lần đầu mở</figcaption>
+      </figure>
+      <figure data-filename="scan_camera_permission_denied.png">
+        <img src="res/scan_camera_permission_denied.png" alt="Màn hình thông báo cần quyền camera" loading="lazy">
+        <figcaption>Màn hình in-app — sau khi từ chối</figcaption>
+      </figure>
+      <figure data-filename="scan_camera_permission_settings.png">
+        <img src="res/scan_camera_permission_settings.png" alt="Màn hình Cài đặt hệ thống — cấp quyền thủ công" loading="lazy">
+        <figcaption>Cài đặt hệ thống — cấp quyền thủ công</figcaption>
+      </figure>
+    </div>
+
+    <table>
+      <thead><tr><th>Trạng thái quyền</th><th>Giao diện hiển thị</th><th>Hành động người dùng</th><th>Kết quả</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Lần đầu mở, chưa cấp quyền</td>
+          <td>Dialog hệ thống xin quyền camera.<br><span class="ja">QRコードを読み取るためにカメラへのアクセスを許可してください。</span><br><span class="vi-trans">(Cho phép camera để quét QR)</span></td>
+          <td>Nhấn Cho phép</td>
+          <td>Camera khởi động, khung quét hiển thị</td>
+        </tr>
+        <tr>
+          <td>Đã từ chối một lần, hỏi lại được</td>
+          <td>Màn hình in-app "Cần quyền camera" với nút <span class="ja">設定する</span> <span class="vi-trans">(Cài đặt)</span></td>
+          <td>Nhấn nút → dialog xin quyền lại</td>
+          <td>Cấp → camera hoạt động; Từ chối → ở lại màn hình chờ</td>
+        </tr>
+        <tr>
+          <td>Đã từ chối vĩnh viễn (Never ask again)</td>
+          <td>Màn hình in-app với nút <span class="ja">設定する</span></td>
+          <td>Nhấn nút → mở Cài đặt hệ thống</td>
+          <td>Tự cấp trong Cài đặt rồi quay lại app</td>
+        </tr>
+        <tr>
+          <td>Quyền bị thu hồi khi app chạy nền</td>
+          <td>(Không hiện giao diện lỗi)</td>
+          <td>Mở lại màn hình</td>
+          <td>Màn hình tự đóng ngay — không crash</td>
+        </tr>
+        <tr>
+          <td>Quay lại từ Cài đặt hệ thống</td>
+          <td>—</td>
+          <td>—</td>
+          <td>Màn hình tự kiểm tra lại quyền (onResume)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="qa-box">
+      <div class="qa-title">✅ Điểm QA cần lưu ý — Quyền camera</div>
+      <ul>
+        <li>Test trên thiết bị thực, không dùng emulator — hành vi permission khác nhau giữa Android versions.</li>
+        <li>Test thu hồi quyền từ Cài đặt trong khi app đang ở foreground: màn hình phải xử lý gracefully (tự đóng, không crash).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ BẢNG LỖI ĐẦY ĐỦ ══ -->
+  <section id="errors">
+    <h2>⚠️ Bảng thông báo lỗi đầy đủ</h2>
+    <p>Tất cả thông báo người dùng thấy trong module này, kèm bản dịch và hành động sau popup.</p>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Tình huống kích hoạt</th><th>Thông báo (tiếng Nhật)</th><th>Nghĩa tiếng Việt</th><th>Nút bấm</th><th>Hành động</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>QR không hợp lệ (chung)</td>
+          <td><span class="ja">久兵衛屋で発行したQRコードを読取ってください。</span></td>
+          <td>Vui lòng quét mã QR do Kyubeeya phát hành.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>QR hóa đơn dài &gt;71 ký tự</td>
+          <td><span class="ja">久兵衛屋で発行されたレシートのみ有効です。</span></td>
+          <td>Chỉ có hóa đơn do Kyubeeya phát hành mới hợp lệ.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>3a</td>
+          <td>QR phiếu chờ quá ngắn (&lt;21 ký tự)</td>
+          <td><span class="ja">久兵衛屋で発行した受付札を読取ってください。</span></td>
+          <td>Vui lòng quét phiếu chờ do Kyubeeya phát hành.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>3b</td>
+          <td>Giải mã QR thất bại hoặc mã cửa hàng không khớp</td>
+          <td><span class="ja">久兵衛屋で発行した受付札を読取ってください。</span></td>
+          <td>Vui lòng quét phiếu chờ do Kyubeeya phát hành.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Tính năng lấy số thứ tự bị tắt</td>
+          <td><span class="ja">本QRコードの読取りはサポートされていません。カメラアプリから読取ください。</span></td>
+          <td>Không hỗ trợ đọc mã QR này. Vui lòng dùng ứng dụng camera.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Chưa đăng nhập khi quét tích điểm</td>
+          <td><span class="ja">この機能はログイン後に使用できるようになります。</span></td>
+          <td>Tính năng này chỉ sử dụng được sau khi đăng nhập.</td>
+          <td><span class="ja">閉じる</span> / <span class="ja">ログイン</span></td>
+          <td>Đóng → tiếp tục quét; Đăng nhập → mở màn hình đăng nhập</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Đang có vé chờ</td>
+          <td><span class="ja">"待ち組数"はアプリホーム画面でご確認いただけます。</span></td>
+          <td>Có thể xem số nhóm đang chờ trên màn hình chính.</td>
+          <td>OK</td>
+          <td>Camera restart</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Không có mạng</td>
+          <td><span class="ja">端末がインターネットに接続されていません。接続状況を確認してください。</span></td>
+          <td>Thiết bị không kết nối internet. Vui lòng kiểm tra kết nối.</td>
+          <td><span class="ja">リトライ</span> / <span class="ja">キャンセル</span></td>
+          <td>Retry → gọi API lại; Hủy → camera tiếp tục</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Lỗi server 500 hoặc -108</td>
+          <td>Thông báo lỗi từ server (nếu có), hoặc thông báo mặc định</td>
+          <td>—</td>
+          <td><span class="ja">リトライ</span> / <span class="ja">キャンセル</span></td>
+          <td>Retry / Hủy</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Lỗi server 503 (tạm thời)</td>
+          <td><span class="ja">サーバー側で一時的に不具合が発生しています。しばらく時間をおいてから再度お試しください。</span></td>
+          <td>Máy chủ đang gặp sự cố tạm thời. Vui lòng thử lại sau.</td>
+          <td><span class="ja">リトライ</span> / <span class="ja">キャンセル</span></td>
+          <td>Retry / Hủy</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Phiên đăng nhập hết hạn giữa chừng (server trả lỗi 401)</td>
+          <td><span class="ja">エラー</span> <span class="vi-trans">(Lỗi)</span></td>
+          <td>Lỗi (thông báo chung) — hệ thống hiện chưa xử lý riêng cho trường hợp này nên hiện thông báo lỗi mặc định. Nếu server có gửi kèm nội dung thông báo cụ thể, sẽ hiện nội dung đó thay vì thông báo chung.</td>
+          <td>OK</td>
+          <td>Camera restart — <strong>không</strong> điều hướng sang login</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<script src="../spec2-shared.js"></script>
+</body>
+</html>
