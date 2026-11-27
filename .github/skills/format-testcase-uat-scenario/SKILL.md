@@ -31,6 +31,8 @@ Skill chỉ bao phủ 2 sheet:
 4. Với mỗi node có điều kiện skip/optional (ghi trong cột "Ghi chú / Điều kiện chuyển") → sinh scenario "Non <node>".
 5. Rà soát bằng checklist cuối file này, đảm bảo mọi dòng ở sheet 1 đều có scenario tương ứng ở sheet 2 (traceability).
 
+6. Với mỗi **button/chức năng riêng của node** ghi trong cột "Ghi chú / Điều kiện chuyển" (vd đính kèm file `ファイル添付`, chọn file merge `添付ファイル選択`, chọn ngày `決裁日入力`) → sinh scenario riêng (dùng chức năng, kết hợp, 引戻し sau khi dùng, biến thể). Chỗ spec chưa mô tả → viết theo giả định và ghi Ghi chú "cần xác nhận spec".
+
 ---
 
 ## Sheet 1 — `1.Workflow Overview`
@@ -54,7 +56,7 @@ Cột A–F (rộng 22 / 39 / 49 / 18 / 53 / 15). Font Cambria; không hiện gr
 | Cột | Quy tắc |
 |-----|---------|
 | No | Tự động `=ROW()-13`. Node song song (関係者) dùng **1 dòng** nhưng ở sheet 2 ký hiệu `8.1`, `8.2`, … cho từng user |
-| Node Name (JP) | Tên node đúng như hệ thống: `作成者`, `申請者`, `上長`, `部門長`… |
+| Node Name (JP) | Tên node đúng như hệ thống: `申請者`, `上長`, `部門長`… (chỉ ghi node có thật; `作成者` chỉ xuất hiện nếu workflow có node này) |
 | Status WF tương ứng | Status hiển thị khi bản ghi dừng ở node (dạng `〜待ち`). Node kankei không có status riêng → `-` |
 | Action WF | `Save / Apply / Re-Apply / Cancel` cho node đầu; `Approve` cho node giữa; `Approve → END` cho node cuối |
 | Ghi chú / Điều kiện chuyển | Ai thao tác được gì (承認 / 差戻し). **Bắt buộc ghi rõ**: node có thể bỏ trống/skip, nhánh song song (kankei) bắt đầu & kết thúc ở đâu |
@@ -138,8 +140,9 @@ Mỗi document (発注, 支払…) có bộ scenario riêng (docNo 1, 2…) vớ
 
 ### Cách viết Kết quả kỳ vọng (cột F)
 
-- Nêu **kết quả cuối** + **mail** (`承認依頼` cho user tiếp theo / `差戻し` / `完了` …) + người nhận (`作成者`, all user node cc user share và kankeisha)
-- Happy full node: `Approved thành công lần lượt các step và tạo ra bản ghi 完了. Gửi mail 完了 đến 作成者, all user node cc user share và kankeisha`
+- Nêu **kết quả cuối** + **mail** (`承認依頼` cho user tiếp theo / `差戻し` / `完了` …) + người nhận (chỉ dùng tên node có trong sheet 1; người nhận mail 完了 lấy theo quy tắc mail user xác nhận, mặc định `all user node cc user share và kankeisha`)
+- Happy full node (mặc định): `Approved thành công lần lượt các step và tạo ra bản ghi 完了. Gửi mail 完了 đến all user node cc user share và kankeisha`. Nếu workflow có node KHÔNG nhận mail 承認依頼 (vd 秘書室, 決裁者) → ghi rõ trong kết quả các case đi qua node đó, và không sinh case "mở bản ghi từ mail" cho node đó
+- 差戻し/引戻し "về node đầu": ghi đúng tên node đầu ở sheet 1 (vd `申請者 (node 1)`), không dùng `作成者` nếu sheet 1 không có node này
 - 再申請: giữ nguyên `申請No.` ban đầu
 - Case phủ định: `Bản ghi vẫn giữ nguyên trạng thái …. KHÔNG tự động 却下`
 - Nhiều kết quả → mỗi ý 1 dòng (`\n`)
@@ -159,13 +162,14 @@ Mỗi document (発注, 支払…) có bộ scenario riêng (docNo 1, 2…) vớ
 | Loại Path (sheet 1) | Scenario tối thiểu |
 |---------------------|--------------------|
 | Happy Path | Tạo từ button; từ copy; từ import; save→edit→tạo; auto shinsei (user create = user 申請者) cả 2 cách tạo; full node (từng cách tạo); **Non {mỗi node skip được}** |
-| 差戻し | Từ node 申請者; từ 1 node giữa; từ 関係者 — đều về 作成者 |
-| 引戻し | Từ 作成者; từ 1 node phê duyệt (sửa comment rồi approve tiếp) |
+| 差戻し | Từ node thứ 2 (ngay sau node đầu); từ 1 node giữa; từ 関係者 — về node đích user xác nhận (mặc định node đầu ở sheet 1, vd 申請者) |
+| 引戻し | Từ node đầu (vd 申請者); từ 1 node phê duyệt (sửa comment rồi approve tiếp) |
 | 取止め | Sau 引戻し; sau 差戻し |
 | 再申請 | Bản ghi bị 差戻し giữa luồng → 再申請 (giữ 申請No.) |
 | Điều kiện đặc biệt | Kankei phải xong trước node chỉ định (nếu spec có) |
+| Nhánh kankei song song | Nếu kankei chạy song song với các node chính: dùng thứ tự shounin kankei **xen kẽ ngẫu nhiên** trong **chính các case đã có** (Full node, Non {node}, 差戻し từ 関係者). **Mỗi case chỉ 1 path**, thứ tự khác nhau giữa các case (không trùng); **không** gộp nhiều `Path 1/2/3` trong 1 dòng và **không** tạo case xen kẽ đứng riêng. Kết quả kỳ vọng nêu từng bước: status còn ở node nào, khi nào mới gửi mail cho node sau nhánh kankei |
 | Thay đổi 関係者 | 0→N; sửa user; thêm ở node kankei; xóa toàn bộ chưa 承認 — từ cả user node và user kankei |
-| Hủy tự động | Có 却下 (tại node kankei sau N ngày); **[NEGATIVE]** không 却下 (bản ghi 差戻し về 作成者) |
+| Hủy tự động | Có 却下 (tại node kankei sau N ngày); **[NEGATIVE]** không 却下 (bản ghi 差戻し về node đầu, status của node đó ở sheet 1, vd `申請者待ち`) |
 | Quyền view PG | List all / URL từ mail; 2 user approve đồng thời; user sau mở bản ghi đã duyệt (Portal vs mail) |
 | Ngoài document | `A-01` phân quyền add/remove PG; `O-01` tính năng phụ (list→search→duplicate…) |
 
@@ -185,7 +189,8 @@ Mỗi document (発注, 支払…) có bộ scenario riêng (docNo 1, 2…) vớ
 ## Mỗi app là một nghiệp vụ riêng
 
 - **Không** mang quy tắc của app/workflow này sang app khác (node skip, đích 差戻し, node PG, A-01/O-01, import/auto shinsei…). Mọi quy tắc phải suy từ **sheet 1 của chính file đó** hoặc từ câu trả lời của user.
-- Khi cập nhật file có sẵn, case có tên node không tồn tại trong sheet 1 (vd "受付", "本部長" ở luồng không có) = copy nhầm từ app khác → sửa.
+- **Sheet 1 là nguồn duy nhất về node.** Mọi tên node, số node, status và người nhận mail trong sheet 2 (và sheet 3 nếu có) phải có trong sheet 1; node không có ở sheet 1 (vd `作成者`, `受付`, `本部長`, `建設上長`, `上長/DM`) thì **không mô tả** trong testcase.
+- Khi cập nhật file có sẵn, case có tên node không tồn tại trong sheet 1 = copy nhầm từ app khác → **sửa** sang node đúng của sheet 1 (vd `引戻し từ 作成者` → `引戻し từ 申請者` nếu node 1 là 申請者) hoặc **đề xuất xóa** nếu không có node tương đương. Cũng rà các câu mô tả loại Path ở sheet 1 (vd "từ 作成者, 申請者") và sửa cho khớp node thật.
 - `A-xx`/`O-xx` chỉ tạo khi workflow thực sự có chức năng phân quyền/tính năng phụ đó; không tự thêm.
 - Node chỉ được coi là skip được khi sheet 1 ghi rõ; node duyệt cuối (→ END) không skip. Case "Non {node}" không có căn cứ → đánh dấu **đề xuất xóa**, không tự xóa.
 
@@ -213,10 +218,11 @@ Một workflow có thể có nhiều bảng node ở sheet 1 (mục `2.1`, `2.2`
 
 Sheet 1 thường không ghi đủ. Trước khi sinh scenario, hỏi user (1 lần `vscode_askQuestions`/`ask_user`):
 
-1. **Đích của 差戻し theo từng node** (vd: node 2~5 và 関係者 → 申請者; node 担当者~TCO → node 関係者; 秘書室/決裁者 → 受付). Không mặc định về 作成者/申請者.
+1. **Đích của 差戻し theo từng node** (vd: node 2~5 và 関係者 → 申請者; node 担当者~TCO → node 関係者; 秘書室/決裁者 → 受付). Không mặc định về 作成者/申請者; đích phải là node có trong sheet 1.
 2. **Node có thể skip/bỏ trống** (sinh scenario `Non {node}`).
 3. **Node là PG** (user cùng PG) và **node là user thường** — chỉ tạo case PG cho node PG.
 4. **Có import / auto shinsei / copy không** — chỉ sinh khi workflow có chức năng đó.
+5. **Quy tắc mail**: node nào KHÔNG nhận mail 承認依頼 (shounin) — thao tác từ Portal/LIST ALL; người nhận mail 完了 (vd `all user trên node, cc user share và user kankei`). Ghi vào sheet 1 (cột Ghi chú của node) và áp vào kết quả kỳ vọng mọi case liên quan; thêm 1 case "Mail 承認依頼 không gửi đến node X".
 
 Khi 差戻し về node khác 申請者, case 取止め/再申請 phải đi theo chuỗi: `7 差戻し→6, 6.1 差戻し→1 取止め`.
 
@@ -247,6 +253,7 @@ Khi user đưa file đã có sheet 2 (đã làm một phần):
 5. Bỏ các merge lạ trong vùng dữ liệu của file cũ; xóa dropdown cũ rồi đặt lại cho từng dòng mới; xóa sạch giá trị + style các dòng thừa.
 6. Chỉ sửa sheet 1 khi lỗi hiển nhiên (số node ở tiêu đề, mô tả copy nhầm từ workflow khác) và **báo lại** user.
 7. Script chạy lại sẽ không còn thấy "bản cũ" để so sánh → luôn chạy lại từ bản backup.
+8. Nếu user đã tự chỉnh/review file sau lần sinh trước (màu, chữ, xóa dòng) → **không chạy lại từ backup cũ** (sẽ mất chỉnh sửa của user). Backup bản hiện tại (`*.user_reviewed.xlsx`) rồi sửa trực tiếp đúng ô cần sửa (script tìm theo nội dung ô), tô vàng + ghi `[Sửa đổi]` vào Ghi chú.
 
 ---
 
@@ -254,13 +261,16 @@ Khi user đưa file đã có sheet 2 (đã làm một phần):
 
 - [ ] Nhiều luồng: ID theo `SC-{flowNo}-{NN}`, không trùng, A-/O- chỉ 1 lần
 - [ ] 差戻し đúng đích theo quy tắc user xác nhận; chuỗi 取止め/再申請 theo sau khớp
-- [ ] Case PG chỉ cho node PG; đủ ma trận thao tác đồng thời
+- [ ] Case PG chỉ cho node PG; đủ ma trận thao tác đồng thời (bỏ case "mở từ mail" cho node không nhận mail 承認依頼)
+- [ ] Rà tên node: mọi tên node/status/người nhận ở sheet 2 (cột D, E, F, J) đều có trong sheet 1; grep các tên không thuộc app (`作成者`, `受付`, `本部長`, `上長/DM`…) = 0
 - [ ] Mode cập nhật: đã backup, giữ layout, case thêm/sửa đã tô màu + ghi chú
 
 - [ ] Sheet 1 đủ 3 mục: thông tin workflow, danh sách node, loại Path
 - [ ] Số node ở sheet 1 khớp mọi chuỗi Path ở sheet 2 (kể cả `8.1`, `8.2`)
 - [ ] Mọi node có ghi chú skip/optional đều có scenario "Non {node}"
 - [ ] Mọi loại Path ở sheet 1 có ≥ 1 scenario ở sheet 2
+- [ ] Mọi button/chức năng riêng của node nêu ở sheet 1 (đính kèm file, merge file, chọn 決裁日…) có scenario
+- [ ] Nhánh kankei song song: mỗi case 1 path xen kẽ riêng, không trùng giữa các case, không nhiều Path trong 1 dòng; không có case auto shinsei/import/copy nếu user xác nhận app không có (user bảo "xóa luôn" thì xóa hẳn dòng, không tô đỏ)
 - [ ] Scenario ID liên tục, không trùng, đúng mẫu `SC-/A-/O-`
 - [ ] Cột F luôn nêu trạng thái cuối + mail (nếu có)
 - [ ] Priority đúng bảng quy tắc; case phủ định gắn `[NEGATIVE]`
